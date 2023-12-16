@@ -131,7 +131,7 @@ class Bot():
                (help1_message("   edit command: 'add email' or 'add email [email]' - allows adding an email for the user")),
                (help1_message("   edit command: 'remove email' - allows removing the user's email")),
                (help1_message("   edit command: 'back' - returns to the main command menu"))]
-        commands = [exit,find,add,remove,show,edit]
+        commands = [exit, find, add, remove, show, edit, ] # Додаю нові команди
         if command == None:
             
             for item_1 in commands:
