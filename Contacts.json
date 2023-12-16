@@ -3,15 +3,15 @@
   "Name": "Vlad",
   "ID": 1,
   "Phones": [],
-  "Birthday": null,
+  "Birthday": "1990-01-01",
   "Email": null,
   "Comment": null
  },
  {
-  "Name": "Comment",
-  "ID": 2,
+  "Name": "Dark",
+  "ID": 3,
   "Phones": [],
-  "Birthday": null,
+  "Birthday": "1994-10-10",
   "Email": null,
   "Comment": null
  }

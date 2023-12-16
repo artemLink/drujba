@@ -1,7 +1,7 @@
 from collections import UserList
 from decorators import input_error
 from Notes import NotesRecord,Tag
-
+import os
 import json
 
 class NotesBook(UserList):
@@ -14,14 +14,31 @@ class NotesBook(UserList):
     
     def serialize_to_json(self,notes:NotesRecord):
         serialize_note_records = {
-                            'ID':notes.id.get_id,
+                            'ID':notes.note_id.get_id,
                             'Title':notes.title.get_title,
                             'Note':notes.note.get_note,
                             'Tags':[item.get_tag for item in notes.tag], 
-                            'Addition Date':notes.date_add.get_date,                   
+                            'Addition Date':notes.addition_date.get_date,                   
         }
-
         self.exiting_data.append(serialize_note_records)
+
+    def set_id(self):
+
+        if len(self.exiting_data) == 0:
+            id = 1
+            return id
+        else:
+            id_values = []
+            for item in self.exiting_data:
+                id_values.append(item['ID'])
+            max_id = max(id_values)
+
+            for id in range(1, max_id):
+                if id in id_values:
+                    continue
+                else:
+                    return id
+        return max_id + 1
 
     def deserialize(self,dict) -> NotesRecord:
         Notes_record = NotesRecord(id = dict['ID'],title=dict['Title'],note=dict['Note'],)
@@ -31,25 +48,19 @@ class NotesBook(UserList):
     def save(self):
          with open(self.json_file_name,'w') as fh:
             json.dump(self.exiting_data,fh,indent=1)
+    def load_notes(self):
+        if os.path.exists(self.json_file_name):
 
-
-Test1  = NotesRecord(1,'Title1','Note111111111111111111','Tag1')
-Test2  = NotesRecord(2,'Title2','Note222222222222222222','Tag2')
-Test3  = NotesRecord(1,'Title3','Note333333333333333333','Tag3')
-Test4  = NotesRecord(1,'Title4','Note444444444444444444','Tag4')
-Test5  = NotesRecord(1,'Title5','Note555555555555555555','Tag5')
-
-NoteBook = NotesBook()
-NoteBook.append(Test1)
-NoteBook.append(Test2)
-NoteBook.append(Test3)
-NoteBook.append(Test4)
-NoteBook.append(Test5)
-
-for item in NoteBook.data:
-    NoteBook.serialize_to_json(item)
-
-NoteBook.save()
+            with open(self.json_file_name, 'r') as fh:
+                try:
+                    self.exiting_data = json.load(fh)
+                except json.JSONDecodeError:
+                    print(json.JSONDecodeError)
+                    return
+                for item in self.exiting_data:
+                    self.data.append(self.deserialize(item))
+        else:
+            print(f'{self.json_file_name} Not Found!')
 
 
 

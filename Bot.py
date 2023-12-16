@@ -71,11 +71,12 @@ class Bot():
                         print(self.book.remove_phone(record,exitinig_record,edit_command[2]))
                     elif len(edit_command) == 2 and edit_command[0] == 'add' and edit_command[1] == 'birthday':    
                         
-                        birthday = '-'.join(input(command_message('Enter Birthday: ')).split()[::-1])
+                        birthday = (input(command_message('Enter Birthday: ')))
                         
                         print(self.book.add_birthday(record,exitinig_record,birthday))
                     elif len(edit_command) > 2 and edit_command[0] == 'add' and edit_command[1] == 'birthday':
-                         print(self.book.add_birthday(record,exitinig_record,'-'.join(edit_command[2:][::-1])))
+                         birthday = edit_command[2]
+                         print(self.book.add_birthday(record,exitinig_record,birthday))
                     elif len(edit_command) == 2 and edit_command[0] == 'remove' and edit_command[1] == 'birthday':
                         print(self.book.remove_birthday(record,exitinig_record))
                     elif len(edit_command) == 2 and edit_command[0] == 'add' and edit_command[1] == 'email':
