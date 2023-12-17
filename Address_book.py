@@ -36,9 +36,7 @@ class AddressBook(UserList):
     def add_full_record(self, name):
         record = Record(name, int(self.set_id()))
         record.phones.append(Phone(input(command_message('Enter Phone: '))))
-        birthday = input(command_message('Enter Birthday: '))
-        birthday = birthday.split()[::-1]
-        record.birthday.set_birthday = input(command_message('Enter Birthday: '))
+        record.birthday.set_birthday = input(command_message('Enter Birthday YYYY-MM-DD: '))
         record.email.set_email = input(command_message('Enter Email: '))
         record.comment.set_comment = input(command_message('Enter comment: '))  # Додав нове поле
         self.data.append(record)
@@ -135,18 +133,17 @@ class AddressBook(UserList):
 
     @input_error
     def add_birthday(self, record: Record, serialize_record, birthday):
-        print(birthday)
         record.birthday.set_birthday = birthday
         serialize_record['Birthday'] = str(record.birthday.get_birthday)
         self.save_contacts()
-        return f'{positive_action("Birthday")} {book_style(record.birthday.get_birthday)} {positive_action("added.")}'
+        return f'{positive_action("Birthday of ")} {book_style(record.birthday.get_birthday)} {positive_action("successfully added.")}'
 
     @input_error
     def remove_birthday(self, record: Record, serialize_record):
         record.birthday.set_birthday = None
         serialize_record['Birthday'] = None
         self.save_contacts()
-        return f'{positive_action("Birthday")} {book_style(record.birthday.get_birthday)} {positive_action("removed.")}'
+        return f'{positive_action("The Birthday of ")}{book_style(record.name.get_name)} {positive_action("was successfully deleted.")}'
 
     @input_error
     def add_email(self, record: Record, serialize_record, email):
@@ -267,3 +264,23 @@ class AddressBook(UserList):
                 continue
 
         return ''.join([str(item) + '\n' for item in find_contacts])
+    
+    @input_error
+    def congratulation(self, days_to_happy:str):
+        happy_list = []
+        current_date = datetime.today().date()
+        if 0 <= int(days_to_happy) <= 365:            
+            for record in self.data:
+                if record.birthday.get_birthday:
+                    next_birthday = record.birthday.get_birthday.replace(year=current_date.year)
+                    if next_birthday < current_date:
+                        next_birthday = record.birthday.get_birthday.replace(year=current_date.year + 1)
+                    
+                    if int(days_to_happy) == (next_birthday - current_date).days:                        
+                        happy_list.append(record)
+        if happy_list:
+            print(positive_action(f'**************************** Birthday in {days_to_happy} days from today! ****************************'))
+            for item in happy_list:
+                print(item)
+        else:
+            print(positive_action(f'The list of people to congratulate in {days_to_happy} days is empty.'))
