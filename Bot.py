@@ -34,6 +34,9 @@ class Bot():
         if action[0] == 'show' and len(action) > 1:
             name = ' '.join(action[1:]).capitalize()
             self.book.show_records(name)
+        if action[0] == 'happy' and len(action) > 1:
+            days = ' '.join(action[1:])
+            self.book.congratulation(days)
         if action[0] == 'edit':
             if len(action) == 1:    
                 name = input(command_message('Enter Contact Name: ')).capitalize()
@@ -71,7 +74,7 @@ class Bot():
                         print(self.book.remove_phone(record,exitinig_record,edit_command[2]))
                     elif len(edit_command) == 2 and edit_command[0] == 'add' and edit_command[1] == 'birthday':    
                         
-                        birthday = (input(command_message('Enter Birthday: ')))
+                        birthday = (input(command_message('Enter Birthday YYYY-MM-DD: ')))
                         
                         print(self.book.add_birthday(record,exitinig_record,birthday))
                     elif len(edit_command) > 2 and edit_command[0] == 'add' and edit_command[1] == 'birthday':
@@ -127,12 +130,15 @@ class Bot():
                (help1_message("   edit command: 'add phone' or 'add phone [phone]' - allows adding a phone number for the user")),
                (help1_message("   edit command: 'edit phone' or 'edit phone [old] [new phone]' - allows editing the user's phone number")),
                (help1_message("   edit command: 'remove phone' or 'remove phone [phone]' - allows removing the user's phone number")),
-               (help1_message("   edit command: 'add birthday' or 'add birthday dd mm YYYY' - allows adding a birthday for the user")),
+               (help1_message("   edit command: 'add birthday' or 'add birthday YYYY-MM-DD' - allows adding a birthday for the user")),
                (help1_message("   edit command: 'remove birthday' - allows removing the user's birthday")),
                (help1_message("   edit command: 'add email' or 'add email [email]' - allows adding an email for the user")),
                (help1_message("   edit command: 'remove email' - allows removing the user's email")),
                (help1_message("   edit command: 'back' - returns to the main command menu"))]
-        commands = [exit, find, add, remove, show, edit, ] # Додаю нові команди
+        happy = [(help_message("- 'happy' - contacts to congratulate")),
+               (help_message("         Usage:")),
+               (help_message("             'happy [DD]' - list of contacts whose birthdays are DD days from the current date"))]
+        commands = [exit, find, add, remove, show, edit, happy] # Додаю нові команди
         if command == None:
             
             for item_1 in commands:
@@ -164,6 +170,10 @@ class Bot():
             for item in edit:
                 print(item)
         print(positive_action('=' * 100))
+        if command == 'happy':
+            print(positive_action('=' * 100))
+            for item in happy:
+                print(item)
         
             
             
