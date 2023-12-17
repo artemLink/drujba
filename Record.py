@@ -251,3 +251,4 @@ class Record:
                 f'{positive_action("Address:")} {book_style(self.address.get_address)} '
                 f'{positive_action("Company:")} {book_style(self.company.get_company)} '
                 f'{positive_action("Tags:")} {book_style(" ".join([str(i) for i in self.tags]))} ')
+
