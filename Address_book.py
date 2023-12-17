@@ -68,8 +68,7 @@ class AddressBook(UserList):
         serialize_record = {'Name': record.name.get_name,
                             'ID': record.id.get_id,
                             'Phones': [item.get_phone for item in record.phones],
-                            'Birthday': str(record.birthday.get_birthday) if isinstance(record.birthday.get_birthday,
-                                                                                        date) else None,
+                            'Birthday': record.birthday.get_birthday.strftime('%Y-%m-%d') if isinstance(record.birthday.get_birthday, date) else None,
                             'Email': record.email.get_email,
                             'Comment': record.comment.get_comment}  # Додав нове поле
         self.exiting_data.append(serialize_record)
@@ -136,7 +135,7 @@ class AddressBook(UserList):
 
     @input_error
     def add_birthday(self, record: Record, serialize_record, birthday):
-
+        print(birthday)
         record.birthday.set_birthday = birthday
         serialize_record['Birthday'] = str(record.birthday.get_birthday)
         self.save_contacts()

@@ -4,6 +4,7 @@ import datetime
 from Style import book_style, positive_action
 from decorators import input_error
 import re
+import calendar
 
 
 class Field(ABC):
@@ -126,24 +127,32 @@ class Birthday(Field):
     def set_birthday(self, birthday):
 
         if isinstance(birthday, str):
-            # print(birthday)
-            if self.validate_date_format(birthday):
-                birthday = datetime.datetime.strptime(birthday, "%Y-%m-%d").date()
-                self._birthday = birthday
-            else:
-                raise ValueError(
-                    "Invalid birthday date. Please enter the date in 'dd mm yyyy' format, for example, '10 10 1994'.")
-        elif isinstance(birthday, datetime.date):
-            self._birthday = birthday
-        elif birthday is None:
-            self._birthday = None
-        else:
-            raise ValueError(
-                "Invalid birthday date. Please enter the date in 'dd mm yyyy' format, for example, '10 10 1994'.")
+            birthday_date = birthday.split('-')
+            if len(birthday_date) != 3:
+                raise ValueError("Invalid birthday date. Please enter the date in 'YYYY-MM-DD' format, for example, '2000-01-01'.")
+            year = birthday_date[0]
+            mounth = birthday_date[1]
+            day = birthday_date[2]
+            if not year.isdigit() or len(year) != 4:
+                raise ValueError('Рік складається тільки з цифр і має 4 символи.')
+            if not mounth.isdigit() or len(mounth) > 2:
+                raise ValueError('Місяць складається тільки з цифр і містить 2 символи.')
+            if int(mounth) > 12:
+                raise ValueError('Місяць може мати значення від 1 до 12.')
+            if not day.isdigit():
+                raise ValueError('день складається тільки з цифр.')
+            days_in_mounth = calendar.monthrange(int(year),int(mounth))[1]
+            if int(day) > days_in_mounth:
+                raise ValueError(f'Некоректно введений день, вказаний місяць має тільки {days_in_mounth} днів.')
+            self._birthday = datetime.date(int(year),int(mounth),int(day))    
 
-    def validate_date_format(self, date_string):
-        regex_pattern = r'^\d{4}-\d{2}-\d{2}$'
-        return re.match(regex_pattern, date_string) is not None
+        elif birthday == None:
+            self._birthday = None
+
+                
+            
+
+    
 
     def __str__(self):
         return f'{str(self._birthday)}'
