@@ -1,5 +1,4 @@
 from collections import UserList
-from decorators import input_error
 from Notes import NotesRecord, Tag
 import json
 import re
@@ -34,11 +33,11 @@ class NotesBook(UserList):
     # серіалізація
     def serialize_to_json(self, notes: NotesRecord):
         serialize_note_records = {
-            'ID': notes.id.get_id,
+            'ID': notes.note_id.get_id,
             'Title': notes.title.get_title,
             'Note': notes.note.get_note,
             'Tags': [item.get_tag for item in notes.tag],
-            'Addition Date': notes.date_add.get_date,
+            'Addition Date': notes.addition_date.get_date,
         }
         self.exiting_data.append(serialize_note_records)
 
@@ -65,8 +64,7 @@ class NotesBook(UserList):
             for item in self.exiting_data:
                 self.data.append(self.deserialize(item))
 
-    # зберігання нотатків
-    @input_error
+    # введення нотатки
     def add_note(self,  input_title: str, input_note: str):
         calc_id = self.set_id()
         rec_note = NotesRecord(
@@ -76,13 +74,11 @@ class NotesBook(UserList):
         self.serialize_to_json(rec_note)
 
     # додавання тегів
-    @input_error
     def add_tag(self, input_tag: str, find_to_id=None):
         find_to_id = self.last_id if find_to_id == None else int(find_to_id)
         self.data[find_to_id-1].tag.append(Tag(input_tag))
 
     # зберігання нотатків
-    @input_error
     def save_note(self):
         self.exiting_data = []
         for s in self.data:
@@ -90,7 +86,6 @@ class NotesBook(UserList):
         self.save()
 
     # пошук по нотатці та заголовку
-    @input_error
     def find_note(self, input_string: str):
         find_list = []
         if input_string != '':
@@ -101,13 +96,12 @@ class NotesBook(UserList):
                 if isinstance(rec.note.get_note, str) and re.search(input_string.lower(), rec.note.get_note.lower()):
                     find_list.append(rec) if not id(rec) in [
                         id(p) for p in find_list] else None
-                if isinstance(rec.date_add.get_date, str) and re.search(input_string.lower(), rec.date_add.get_date.lower()):
+                if isinstance(rec.addition_date.get_date, str) and re.search(input_string.lower(), rec.addition_date.get_date.lower()):
                     find_list.append(rec) if not id(rec) in [
                         id(p) for p in find_list] else None
         return find_list
 
     # пошук по тегу
-    @input_error
     def find_tag(self, input_tag: str):
         find_list = []
         if input_tag != '':
@@ -120,25 +114,35 @@ class NotesBook(UserList):
         return find_list
 
     # пошук нотатки по ідентифікатору
-    @input_error
     def find_note_id(self, input_id: str):
         find_list = []
         if input_id != '':
             for rec in self.data:
-                if isinstance(rec.id.get_id, int) and re.search(input_id.lower(), str(rec.id.get_id).lower()):
+                if isinstance(rec.note_id.get_id, int) and re.search(input_id.lower(), str(rec.note_id.get_id).lower()):
                     find_list.append(rec) if not id(rec) in [
                         id(p) for p in find_list] else None
         return find_list
 
     # редагування нотатки
-    @input_error
     def edit_note(self, input_id: str, input_string: str):
         if input_id != '':
-            self.data[int(input_id)-1].note.set_note = input_string
+            for index, item in enumerate(self.data):
+                if item.note_id.get_id == int(input_id):
+                    print(index)
+                    self.data[index].note.set_note = input_string
 
     # видалення нотатки
-    @input_error
     def delete_note(self, input_id: str):
         if input_id != '':
-            del_index = int(input_id)-1
-            self.data.pop(del_index)
+            for index, item in enumerate(self.data):
+                if item.note_id.get_id == int(input_id):
+                    print(index)
+                    self.data.pop(index)
+
+    # редагування заголовку
+    def edit_title(self, input_id: str, input_string: str):
+        if input_id != '':
+            for index, item in enumerate(self.data):
+                if item.note_id.get_id == int(input_id):
+                    print(index)
+                    self.data[index].title.set_title = input_string
