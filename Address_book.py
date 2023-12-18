@@ -65,11 +65,42 @@ class AddressBook(UserList):
         self.save_contacts()
         return positive_action(f'{record.name.get_name} removed.')
 
+    def export_contacts_by_tag(self, tag: str):
+        filtered_records = [record for record in self.data if
+                            tag.lower() in [item.get_tag().lower() for item in record.tags]]
+
+        if filtered_records:
+            tag_file_name = f'Contacts_{tag.lower()}.json'
+
+            tag_data = []
+            for record in filtered_records:
+                serialize_record = {
+                    'Name': record.name.get_name(),
+                    'ID': record.id.get_id(),
+                    'Phones': [item.get_phone() for item in record.phones],
+                    'Birthday': record.birthday.get_birthday().strftime('%Y-%m-%d') if isinstance(
+                        record.birthday.get_birthday(), date) else None,
+                    'Email': record.email.get_email(),
+                    'Comment': record.comment.get_comment(),
+                    'Address': record.address.get_address(),
+                    'Company': record.company.get_company(),
+                    'Tags': [item.get_tag() for item in record.tags],
+                }
+                tag_data.append(serialize_record)
+
+            with open(tag_file_name, 'w') as tag_fh:
+                json.dump(tag_data, tag_fh, indent=1)
+                print(f'{tag_file_name} successfully exported!')
+        else:
+            print(f'No contacts found for the tag: {tag}')
+
+
     def serialize_to_json(self, record: Record):
         serialize_record = {'Name': record.name.get_name,
                             'ID': record.id.get_id,
                             'Phones': [item.get_phone for item in record.phones],
-                            'Birthday': record.birthday.get_birthday.strftime('%Y-%m-%d') if isinstance(record.birthday.get_birthday, date) else None,
+                            'Birthday': record.birthday.get_birthday.strftime('%Y-%m-%d') if isinstance(
+                                record.birthday.get_birthday, date) else None,
                             'Email': record.email.get_email,
                             'Comment': record.comment.get_comment,
                             'Address': record.address.get_address,
@@ -169,10 +200,6 @@ class AddressBook(UserList):
             self.save_contacts()
         else:
             raise ValueError("Tags is not found.")
-
-    def find_teg(self):
-        pass
-
 
     @input_error
     def add_phone(self, record: Record, serialize_record, phone) -> str:
@@ -352,22 +379,23 @@ class AddressBook(UserList):
                 continue
 
         return ''.join([str(item) + '\n' for item in find_contacts])
-    
+
     @input_error
-    def congratulation(self, days_to_happy:str):
+    def congratulation(self, days_to_happy: str):
         happy_list = []
         current_date = datetime.today().date()
-        if 0 <= int(days_to_happy) <= 365:            
+        if 0 <= int(days_to_happy) <= 365:
             for record in self.data:
                 if record.birthday.get_birthday:
                     next_birthday = record.birthday.get_birthday.replace(year=current_date.year)
                     if next_birthday < current_date:
                         next_birthday = record.birthday.get_birthday.replace(year=current_date.year + 1)
-                    
-                    if int(days_to_happy) == (next_birthday - current_date).days:                        
+
+                    if int(days_to_happy) == (next_birthday - current_date).days:
                         happy_list.append(record)
         if happy_list:
-            print(positive_action(f'**************************** Birthday in {days_to_happy} days from today! ****************************'))
+            print(positive_action(
+                f'**************************** Birthday in {days_to_happy} days from today! ****************************'))
             for item in happy_list:
                 print(item)
         else:
