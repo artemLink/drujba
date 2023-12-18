@@ -184,11 +184,11 @@ class Birthday(Field):
     @get_birthday.setter
     def set_birthday(self, birthday):
 
-        if isinstance(birthday, str):
+        if isinstance(birthday, str) and birthday != '':
             birthday_date = birthday.split('-')
             if len(birthday_date) != 3:
                 raise ValueError(
-                    "Invalid birthday date. Please enter the date in 'YYYY-MM-DD' format, for example, '2000-01-01'.")
+                    "Invalid birthday date. Please enter the date in 'YYYY-MM-DD' format.")
             year = birthday_date[0]
             mounth = birthday_date[1]
             day = birthday_date[2]
@@ -216,6 +216,10 @@ class Email(Field):
     def __init__(self, email) -> None:
         self._email = None
         self.set_email = email
+        
+    def find_all_emails(self, email):
+        result = re.findall(r"[a-zA-Z][\w_.]+@\w{2,}\.\w{2,}", email)
+        return result
 
     @property
     def get_email(self):
@@ -223,7 +227,13 @@ class Email(Field):
 
     @get_email.setter
     def set_email(self, email):
-        self._email = email
+        if email:
+            if self.find_all_emails(email):
+                self._email = email
+            else:
+                raise ValueError('Wrong email format.')
+        else:
+            self._email = None
 
     def __str__(self):
         return f'{self.get_email}'
