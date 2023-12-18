@@ -1,4 +1,4 @@
-from Record import Record, Phone
+from Record import Record, Phone, Tag
 from collections import UserList
 from datetime import datetime, date
 from Style import positive_action, command_message, book_style, error_message
@@ -38,7 +38,10 @@ class AddressBook(UserList):
         record.phones.append(Phone(input(command_message('Enter Phone: '))))
         record.birthday.set_birthday = input(command_message('Enter Birthday YYYY-MM-DD: '))
         record.email.set_email = input(command_message('Enter Email: '))
-        record.comment.set_comment = input(command_message('Enter comment: '))  # Додав нове поле
+        record.comment.set_comment = input(command_message('Enter comment: '))
+        record.address.set_address = input(command_message('Enter address: '))
+        record.company.set_company = input(command_message('Enter company: '))
+        record.tags.append(Tag(input(command_message('Enter Tag: '))))
         self.data.append(record)
         self.serialize_to_json(record)
         self.save_contacts()
@@ -68,7 +71,11 @@ class AddressBook(UserList):
                             'Phones': [item.get_phone for item in record.phones],
                             'Birthday': record.birthday.get_birthday.strftime('%Y-%m-%d') if isinstance(record.birthday.get_birthday, date) else None,
                             'Email': record.email.get_email,
-                            'Comment': record.comment.get_comment}  # Додав нове поле
+                            'Comment': record.comment.get_comment,
+                            'Address': record.address.get_address,
+                            'Company': record.company.get_company,
+                            'Tags': [item.get_tag for item in record.tags],
+                            }
         self.exiting_data.append(serialize_record)
 
     @input_error
@@ -78,9 +85,30 @@ class AddressBook(UserList):
         record.birthday.set_birthday = dict['Birthday']
         [record.phones.append(Phone(item)) for item in dict['Phones']]
         record.email.set_email = dict['Email']
-        record.comment.set_comment = dict['Comment'] # Нове поле
+        if "Comment" in dict:
+            record.comment.set_comment = dict['Comment']
+        if 'Address' in dict:
+            record.address.set_address = dict['Address']
+        if "Company" in dict:
+            record.company.set_company = dict['Company']
+        if 'Tags' in dict:
+            record.tags.extend([Tag(item) for item in dict['Tags']])
 
         return record
+
+    @input_error
+    def add_company(self, record: Record, serialize_record, company):
+        record.company.set_company = company
+        serialize_record['Company'] = company
+        self.save_contacts()
+        return f"{positive_action('Company')} {book_style(record.company.get_company)} {positive_action('added')}"
+
+    @input_error
+    def remove_company(self, record: Record, serialize_record, company):
+        record.company.set_company = None
+        serialize_record['Company'] = None
+        self.save_contacts()
+        return f"{positive_action('Company')} {book_style(record.company.get_company)} {positive_action('removed')}"
 
     @input_error
     def add_comment(self, record: Record, serialize_record, comment):  # Додавання або зміна все існуючого коментаря
@@ -89,18 +117,65 @@ class AddressBook(UserList):
         self.save_contacts()
         return f'{positive_action("Comment")} {book_style(record.comment.get_comment)} {positive_action("added.")}'
 
-
     @input_error
     def remove_comment(self, record: Record, serialize_record):  # Видалення
         record.comment.set_comment = None
         serialize_record['Comment'] = None
         self.save_contacts()
-        return f'{positive_action("Comment")} {book_style(record.email.get_comment)} {positive_action("removed.")}'
+        return f'{positive_action("Comment")} {book_style(record.comment.get_comment)} {positive_action("removed.")}'  # Виправив помилку
 
+    @input_error
+    def add_address(self, record: Record, serialize_record, address):  # Додавання або зміна вже існуючого адреса
+        record.address.set_address = address
+        serialize_record['Address'] = address
+        self.save_contacts()
+        return f'{positive_action("Address")} {book_style(record.address.get_address)} {positive_action("added.")}'
+
+    @input_error
+    def remove_address(self, record: Record, serialize_record):  # видалення адреси
+        record.address.set_address = None
+        serialize_record['Address'] = None
+        self.save_contacts()
+        return f'{positive_action("Address")} {book_style(record.address.get_address)} {positive_action("removed")}'
+
+    @input_error
+    def add_teg(self, record: Record, serialize_record, tag):
+        record.tags.append(Tag(tag))
+        serialize_record['Tags'].append(tag)
+        self.save_contacts()
+        return f"{positive_action(f'Tags:')} {book_style(f'{tag}')} {positive_action('added')}"
+
+    @input_error
+    def edit_teg(self, record: Record, serialize_record, old_tag, new_tag):
+        for item in record.tags:
+            if item.get_tag == old_tag:
+                item.set_tag = new_tag
+                break
+        for index, item in enumerate(serialize_record['Tags']):
+            if item == old_tag:
+                serialize_record['Tags'][index] = new_tag
+                break
+        self.save_contacts()
+
+    @input_error
+    def remove_teg(self, record: Record, serialize_record, tag):
+        removed_tags = [item for item in record.tags if item.get_tag == tag]
+
+        if removed_tags:
+            for removed_tag in removed_tags:
+                record.tags.remove(removed_tag)
+
+            serialize_record['Tags'] = [item for item in serialize_record['Tags'] if item != tag]
+            self.save_contacts()
+        else:
+            raise ValueError("Tags is not found.")
+
+    def find_teg(self):
+        pass
 
 
     @input_error
-    def add_phone(self, record: Record, serialize_record, phone) -> Record:
+    def add_phone(self, record: Record, serialize_record, phone) -> str:
 
         record.phones.append(Phone(phone))
         serialize_record['Phones'].append(phone)
@@ -121,15 +196,16 @@ class AddressBook(UserList):
 
     @input_error
     def remove_phone(self, record: Record, serialize_record, phone):
-        for item in record.phones:
-            if item.get_phone == phone:
-                item.set_phone = None
-            else:
-                raise ValueError('ValueError: Phone number not found.')
-        for item in serialize_record['Phones']:
-            if item == phone:
-                serialize_record['Phones'].remove(phone)
-        self.save_contacts()
+        removed_phones = [item for item in record.phones if item.get_phone == phone]
+
+        if removed_phones:
+            for removed_phone in removed_phones:
+                record.phones.remove(removed_phone)
+
+            serialize_record['Phones'] = [item for item in serialize_record['Phones'] if item != phone]
+            self.save_contacts()
+        else:
+            raise ValueError('ValueError: Phone number not found.')
 
     @input_error
     def add_birthday(self, record: Record, serialize_record, birthday):
@@ -247,10 +323,17 @@ class AddressBook(UserList):
             phone_numbers = [phone.get_phone for phone in item.phones]
             birthday = str(item.birthday.get_birthday)
             email = item.email.get_email
+            tags = [tag.get_tag for tag in item.tags]
+            if tags:
+                for tag in tags:
+                    if tag is not None and search_string.lower() in tag.lower():
+                        find_contacts.append(item)
+                        continue
 
             if name != None and search_string.lower() in name.lower():
                 find_contacts.append(item)
                 continue
+
             if len(phone_numbers) > 0:
                 for phone in phone_numbers:
                     if search_string in phone:

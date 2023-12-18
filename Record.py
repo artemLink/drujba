@@ -13,6 +13,66 @@ class Field(ABC):
         pass
 
 
+class Tag(Field):
+    def __init__(self, tag):
+        self._tag = None
+        self.set_tag = tag
+
+    @property
+    def get_tag(self):
+        return self._tag
+
+    @get_tag.setter
+    def set_tag(self, tag: str):
+        if tag is None or bool(tag) is False:
+            self._tag = None
+        else:
+            self._tag = tag
+
+    def __str__(self):
+        return f"{self.get_tag}"
+
+
+class Company(Field):  # Новий клас компания
+    def __init__(self, company: str):
+        self._company = None
+        self.set_company = company
+
+    @property
+    def get_company(self):
+        return self._company
+
+    @get_company.setter
+    def set_company(self, value: str):
+        if bool(value) is False:
+            self._company = None
+        else:
+            self._company = value
+
+    def __str__(self):
+        return f"{self.get_company}"
+
+
+class Address(Field):  # Новий класс адреси
+    def __init__(self, address: str):
+        self._address = None
+        self.set_address = address
+
+    @property
+    def get_address(self):
+        return self._address
+
+    @get_address.setter
+    def set_address(self, value: str):
+        if bool(value) is None or bool(value) is False:
+            self._address = None
+        else:
+            self._address = value
+
+    def __str__(self):
+        return f"{self.get_address}"
+
+
 class Comment(Field):  # новий клас
     def __init__(self, comment: str):
         self._comment = None
@@ -24,12 +84,10 @@ class Comment(Field):  # новий клас
 
     @get_comment.setter
     def set_comment(self, value: str):
-        if value is None :
-            self._comment = value
+        if value is None or bool(value) is False:
+            self._comment = None
         elif value.strip():
             self._comment = value
-        else:
-            raise ValueError("Comment cannot be empty or consist only of spaces.")
 
     def __str__(self):
         return f"{self.get_comment}"
@@ -105,8 +163,8 @@ class Phone(Field):
     def set_phone(self, phone: str):
         if phone.isdigit() and len(phone) == 10:
             self._phone = phone
-        #        elif phone == None:
-        #              self._phone = None
+        elif bool(phone) is False:
+            self._phone = None
         else:
             raise ValueError('ValueError: Phone Number have 10 numbers ex: 0501952343')
 
@@ -129,7 +187,8 @@ class Birthday(Field):
         if isinstance(birthday, str):
             birthday_date = birthday.split('-')
             if len(birthday_date) != 3:
-                raise ValueError("Invalid birthday date. Please enter the date in 'YYYY-MM-DD' format, for example, '2000-01-01'.")
+                raise ValueError(
+                    "Invalid birthday date. Please enter the date in 'YYYY-MM-DD' format, for example, '2000-01-01'.")
             year = birthday_date[0]
             mounth = birthday_date[1]
             day = birthday_date[2]
@@ -141,18 +200,13 @@ class Birthday(Field):
                 raise ValueError('Місяць може мати значення від 1 до 12.')
             if not day.isdigit():
                 raise ValueError('день складається тільки з цифр.')
-            days_in_mounth = calendar.monthrange(int(year),int(mounth))[1]
+            days_in_mounth = calendar.monthrange(int(year), int(mounth))[1]
             if int(day) > days_in_mounth:
                 raise ValueError(f'Некоректно введений день, вказаний місяць має тільки {days_in_mounth} днів.')
-            self._birthday = datetime.date(int(year),int(mounth),int(day))    
+            self._birthday = datetime.date(int(year), int(mounth), int(day))
 
         elif birthday == None:
             self._birthday = None
-
-                
-            
-
-    
 
     def __str__(self):
         return f'{str(self._birthday)}'
@@ -176,13 +230,25 @@ class Email(Field):
 
 
 class Record:
-    def __init__(self, name, id, birthday=None, email=None, comment=None):
+    def __init__(self, name, id, birthday=None, email=None, comment=None, address=None, company=None):
         self.name = Name(name)
         self.id = ID(int(id))
         self.phones = []
         self.birthday = Birthday(birthday)
         self.email = Email(email)
-        self.comment = Comment(comment)  # Додав новий класс як поле
+        self.comment = Comment(comment)
+        self.address = Address(address)
+        self.company = Company(company)
+        self.tags = []
 
     def __str__(self):
-        return f'{positive_action("ID:")} {book_style(self.id.get_id)} {positive_action("Name:")} {book_style(self.name.get_name)} {positive_action("Phones: ")} {book_style(" ".join([str(item) for item in self.phones]))} {positive_action("Birthday: ")} {book_style(self.birthday.get_birthday)} {positive_action("Email:")} {book_style(self.email.get_email)}'
+        return (f'{positive_action("ID:")} {book_style(self.id.get_id)} '
+                f'{positive_action("Name:")} {book_style(self.name.get_name)} '
+                f'{positive_action("Phones:")} {book_style(" ".join([str(item) for item in self.phones]))} '
+                f'{positive_action("Birthday:")} {book_style(self.birthday.get_birthday)} '
+                f'{positive_action("Email:")} {book_style(self.email.get_email)} '
+                f'{positive_action("Comment:")} {book_style(self.comment.get_comment)} '
+                f'{positive_action("Address:")} {book_style(self.address.get_address)} '
+                f'{positive_action("Company:")} {book_style(self.company.get_company)} '
+                f'{positive_action("Tags:")} {book_style(" ".join([str(i) for i in self.tags]))} ')
+

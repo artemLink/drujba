@@ -2,63 +2,61 @@
  {
   "Name": "Vlad",
   "ID": 1,
-  "Phones": [],
-  "Birthday": "1990-01-01",
-  "Email": null,
-  "Comment": null
+  "Phones": [
+   "0963610573"
+  ],
+  "Birthday": "1111-01-01",
+  "Email": "fre",
+  "Comment": "rfer",
+  "Address": "erfe",
+  "Company": "fer",
+  "Tags": [
+   "Family"
+  ]
  },
  {
-  "Name": "Dark",
-  "ID": 3,
-  "Phones": [],
-  "Birthday": "1994-10-10",
-  "Email": null,
-  "Comment": null
- },
- {
-  "Name": "Kiril",
+  "Name": "Oleg",
   "ID": 2,
   "Phones": [
-   "1234567899"
+   "1057309636"
   ],
-  "Birthday": "1965-12-22",
-  "Email": "ggggg@hjhj.com",
-  "Comment": "frends"
+  "Birthday": "1111-01-01",
+  "Email": "fegew",
+  "Comment": "grewge",
+  "Address": "gwerg",
+  "Company": "gerg",
+  "Tags": [
+   null
+  ]
  },
  {
-  "Name": "Nik",
+  "Name": "Vava",
+  "ID": 3,
+  "Phones": [
+   "1231231231"
+  ],
+  "Birthday": "1111-01-01",
+  "Email": "",
+  "Comment": null,
+  "Address": null,
+  "Company": null,
+  "Tags": [
+   "family"
+  ]
+ },
+ {
+  "Name": "Vovovov",
   "ID": 4,
-  "Phones": [],
-  "Birthday": null,
-  "Email": null,
-  "Comment": null
- },
- {
-  "Name": "Kolia",
-  "ID": 5,
   "Phones": [
-   "1456327899"
+   "0912311233"
   ],
-  "Birthday": "2010-12-25",
-  "Email": "gauu@lkkkf.com",
-  "Comment": "frands"
- },
- {
-  "Name": "Nina",
-  "ID": 6,
-  "Phones": [
-   "1456237899"
-  ],
-  "Birthday": "2012-12-25",
-  "Email": "hhhhhh@jjj.com",
-  "Comment": "ll"
- },
- {
-  "Name": "Kolias",
-  "ID": 7,
-  "Phones": [],
-  "Birthday": "2020-12-24",
-  "Email": null,
-  "Comment": null
+  "Birthday": "1111-01-01",
+  "Email": "vfedvf",
+  "Comment": "evrerrv",
+  "Address": "verev",
+  "Company": "veerv",
+  "Tags": [
+   "family"
+  ]
  }
 ]
