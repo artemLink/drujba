@@ -196,14 +196,15 @@ class AddressBook(UserList):
 
     @input_error
     def remove_phone(self, record: Record, serialize_record, phone):
+        if not record.phones:
+            return error_message('Phone is None!')
         removed_phones = [item for item in record.phones if item.get_phone == phone]
-
         if removed_phones:
             for removed_phone in removed_phones:
                 record.phones.remove(removed_phone)
-
             serialize_record['Phones'] = [item for item in serialize_record['Phones'] if item != phone]
             self.save_contacts()
+            return f'{positive_action("Phone number")} {phone} {positive_action("successfully removed.")}'
         else:
             raise ValueError('ValueError: Phone number not found.')
 
@@ -212,10 +213,12 @@ class AddressBook(UserList):
         record.birthday.set_birthday = birthday
         serialize_record['Birthday'] = str(record.birthday.get_birthday)
         self.save_contacts()
-        return f'{positive_action("Birthday of ")} {book_style(record.birthday.get_birthday)} {positive_action("successfully added.")}'
+        return f'{positive_action("Birthday ")} {book_style(record.birthday.get_birthday)} {positive_action("successfully added.")}'
 
     @input_error
     def remove_birthday(self, record: Record, serialize_record):
+        if not record.birthday.set_birthday:
+            return error_message('Birthday is None!')
         record.birthday.set_birthday = None
         serialize_record['Birthday'] = None
         self.save_contacts()
@@ -230,6 +233,8 @@ class AddressBook(UserList):
 
     @input_error
     def remove_email(self, record: Record, serialize_record):
+        if not record.email.set_email:
+            return error_message('Email is None!')
         record.email.set_email = None
         serialize_record['Email'] = None
         self.save_contacts()
