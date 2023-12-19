@@ -94,6 +94,34 @@ class AddressBook(UserList):
         else:
             print(f'No contacts found for the tag: {tag}')
 
+    def import_files(self, file):
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+        source_filepath = os.path.join(script_directory, self.json_file_name)
+        import_file_path = os.path.join(script_directory, file)
+
+        # Load source file
+        with open(source_filepath, 'r') as source_file:
+            source_data = json.load(source_file)
+
+        # Load import file and check if exist
+        if not os.path.exists(import_file_path):
+            print('Такого файлу не існує')
+            return
+        with open(import_file_path, 'r') as import_file:
+            import_data = json.load(import_file)
+
+        new_json = source_data + import_data
+        count = 1
+
+        for item in new_json:
+            item['ID'] = count
+            count += 1
+
+        # Write data into source file
+        with open(self.json_file_name, 'w') as destination_file:
+            json.dump(new_json, destination_file, indent=2)
+
+        print(f"Дані імпортовано у {self.json_file_name}")
 
     def serialize_to_json(self, record: Record):
         serialize_record = {'Name': record.name.get_name,

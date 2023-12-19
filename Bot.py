@@ -158,7 +158,8 @@ class MyCmd(cmd.Cmd):
             for sh in self.notes_book.find_note(question):
                 if isinstance(sh.tag, list):
                     table.add_row(
-                        f"{sh.note_id.get_id}", f"{sh.addition_date.get_date}", f"{' '.join([str(item) for item in sh.tag])}", f"{sh.title.get_title}", f"{sh.note.get_note}")
+                        f"{sh.note_id.get_id}", f"{sh.addition_date.get_date}",
+                        f"{' '.join([str(item) for item in sh.tag])}", f"{sh.title.get_title}", f"{sh.note.get_note}")
             self.console.print(table)
         else:
             print(error_message("No notes found."))
@@ -176,7 +177,8 @@ class MyCmd(cmd.Cmd):
             for sh in self.notes_book.find_tag(question):
                 if isinstance(sh.tag, list):
                     table.add_row(
-                        f"{sh.note_id.get_id}", f"{sh.addition_date.get_date}", f"{' '.join([str(item) for item in sh.tag])}", f"{sh.title.get_title}", f"{sh.note.get_note}")
+                        f"{sh.note_id.get_id}", f"{sh.addition_date.get_date}",
+                        f"{' '.join([str(item) for item in sh.tag])}", f"{sh.title.get_title}", f"{sh.note.get_note}")
 
             self.console.print(table)
         else:
@@ -219,7 +221,8 @@ class MyCmd(cmd.Cmd):
         for sh in self.notes_book:
             if isinstance(sh.tag, list):
                 table.add_row(f"{sh.note_id.get_id}", f"{sh.addition_date.get_date}",
-                              f"{' '.join([str(item) for item in sh.tag])}", f"{sh.title.get_title}", f"{sh.note.get_note}")
+                              f"{' '.join([str(item) for item in sh.tag])}", f"{sh.title.get_title}",
+                              f"{sh.note.get_note}")
         self.console.print(table)
 
     ### ------------ Sort_by_type part-------------###
@@ -378,6 +381,10 @@ class MyCmd(cmd.Cmd):
         else:
             print(error_message("No record found."))
 
+    def do_import(self, *args):
+        "Import file in contacts"
+        file = input(command_message("Enter filename>>> "))
+        self.book.import_files(file)
     # не працює
     # def do_exp_tag(self, *args):
     #     "Exports contacts by tag to a JSON file"
