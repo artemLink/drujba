@@ -32,12 +32,12 @@ class MyCmd(cmd.Cmd):
          "make_rec",
          "find_rec",
          "del_rec",
-         "del_comp_rec",
+         #  "del_comp_rec",
          "edit_ph_rec",
          "edit_tag_rec",
          "cong_rec",
-         "exp_tag",
-         "add_comp_rec",
+         # "exp_tag",
+         # "add_comp_rec",
          ])
     intro = tprint("designed  by  DRUJBA  team")
 
@@ -109,12 +109,12 @@ class MyCmd(cmd.Cmd):
                       "Edites tag to record in addressbook by name (use search before use)")
         table.add_row("cong_rec",
                       "Search contacts by birthday")
-        table.add_row("exp_tag",
-                      "Exports contacts by tag to a JSON file (use search before use)")
-        table.add_row("add_comp_rec",
-                      "Adds a company to a record in the address book by name (use search before use)")
-        table.add_row("del_comp_rec",
-                      "Deletes company in addressbook by name (use search before use)")
+        # table.add_row("exp_tag",
+        #               "Exports contacts by tag to a JSON file (use search before use)")
+        # table.add_row("add_comp_rec",
+        #               "Adds a company to a record in the address book by name (use search before use)")
+        # table.add_row("del_comp_rec",
+        #               "Deletes company in addressbook by name (use search before use)")
         table.add_row("----",
                       "-----------------------------------")
         table.add_row("sort_by_type",
@@ -379,29 +379,29 @@ class MyCmd(cmd.Cmd):
             print(error_message("No record found."))
 
     # не працює
-    def do_exp_tag(self, *args):
-        "Exports contacts by tag to a JSON file"
-        tag_to_export = input(command_message(
-            "Enter the tag to export contacts: "))
+    # def do_exp_tag(self, *args):
+    #     "Exports contacts by tag to a JSON file"
+    #     tag_to_export = input(command_message(
+    #         "Enter the tag to export contacts: "))
 
-        if tag_to_export != "":
-            try:
-                self.book.export_contacts_by_tag(tag_to_export)
-                print(positive_action(
-                    f'Contacts with tag "{tag_to_export}" exported successfully!'))
-            except Exception as e:
-                print(error_message(f'Error exporting contacts: {str(e)}'))
-        else:
-            print(error_message("Tag cannot be empty."))
+    #     if tag_to_export != "":
+    #         try:
+    #             self.book.export_contacts_by_tag(tag_to_export)
+    #             print(positive_action(
+    #                 f'Contacts with tag "{tag_to_export}" exported successfully!'))
+    #         except Exception as e:
+    #             print(error_message(f'Error exporting contacts: {str(e)}'))
+    #     else:
+    #         print(error_message("Tag cannot be empty."))
 
-    def do_add_comp_rec(self, *args):
-        "Adds a company to a record in the address book by name"
-        # record_name = input(command_message("Enter the name of the record to add a company: "))
-        pass
+    # def do_add_comp_rec(self, *args):
+    #     "Adds a company to a record in the address book by name"
+    #     # record_name = input(command_message("Enter the name of the record to add a company: "))
+    #     pass
 
-    def do_del_comp_rec(self, *args):
-        "Deletes company in addressbook"
-        pass
+    # def do_del_comp_rec(self, *args):
+    #     "Deletes company in addressbook"
+    #     pass
 
 
 if __name__ == "__main__":
