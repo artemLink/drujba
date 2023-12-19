@@ -6,7 +6,7 @@
    "0963610573"
   ],
   "Birthday": "1111-01-01",
-  "Email": "fre",
+  "Email": null,
   "Comment": "rfer",
   "Address": "erfe",
   "Company": "fer",
@@ -21,7 +21,7 @@
    "1057309636"
   ],
   "Birthday": "1111-01-01",
-  "Email": "fegew",
+  "Email": null,
   "Comment": "grewge",
   "Address": "gwerg",
   "Company": "gerg",
@@ -36,7 +36,7 @@
    "1231231231"
   ],
   "Birthday": "1111-01-01",
-  "Email": "",
+  "Email": null,
   "Comment": null,
   "Address": null,
   "Company": null,
@@ -51,12 +51,57 @@
    "0912311233"
   ],
   "Birthday": "1111-01-01",
-  "Email": "vfedvf",
+  "Email": null,
   "Comment": "evrerrv",
   "Address": "verev",
   "Company": "veerv",
   "Tags": [
    "family"
+  ]
+ },
+ {
+  "Name": "Piter",
+  "ID": 5,
+  "Phones": [
+   "1234567890"
+  ],
+  "Birthday": "2010-12-27",
+  "Email": "piter@dog.com",
+  "Comment": "prova1",
+  "Address": "kiev",
+  "Company": "ops",
+  "Tags": [
+   "frands"
+  ]
+ },
+ {
+  "Name": "Nik",
+  "ID": 6,
+  "Phones": [
+   "0123456789"
+  ],
+  "Birthday": "2001-12-29",
+  "Email": "nik@kd.com",
+  "Comment": null,
+  "Address": "odessa",
+  "Company": null,
+  "Tags": [
+   null
+  ]
+ },
+ {
+  "Name": "Lilia",
+  "ID": 7,
+  "Phones": [
+   "0123654789"
+  ],
+  "Birthday": "2000-12-30",
+  "Email": "lilia@hhh.com",
+  "Comment": "last",
+  "Address": "poltava",
+  "Company": null,
+  "Tags": [
+   "frands"
   ]
  }
 ]
