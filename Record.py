@@ -24,9 +24,6 @@ class Tag(Field):
 
     @get_tag.setter
     def set_tag(self, tag: str):
-        if tag is None or bool(tag) is False:
-            self._tag = None
-        else:
             self._tag = tag
 
     def __str__(self):

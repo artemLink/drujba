@@ -210,10 +210,19 @@ class AddressBook(UserList):
             if item.get_tag == old_tag:
                 item.set_tag = new_tag
                 break
+            elif old_tag is "":
+                item.set_tag = new_tag
+                break
+
+
         for index, item in enumerate(serialize_record['Tags']):
             if item == old_tag:
                 serialize_record['Tags'][index] = new_tag
                 break
+            elif item is "":
+                serialize_record['Tags'][index] = new_tag
+                break
+
         self.save_contacts()
 
     @input_error
