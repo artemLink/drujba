@@ -33,8 +33,8 @@ class UserAccount():
         self._user_name = input('Input Login:')
         self._account = os.path.join(FOLDER_ACCOUNTS_PATH,f'{self._user_name}_account.txt')
         self._user_password.pass_ok()
-        self._addres_book = os.path.join(FOLDER_ADDRESSBOOKS_PATH,f'{self.generate_file_names()}')
-        self._Notes_book = os.path.join(FOLDER_NOTESBOOKS_PATH,f'{self.generate_file_names()}')
+        self._addres_book = os.path.join(FOLDER_ADDRESSBOOKS_PATH,f'{self._user_name}_AddressBook.json')
+        self._Notes_book = os.path.join(FOLDER_NOTESBOOKS_PATH,f'{self._user_name}_NotesBook.json')
         self.create_AdressBook()
         self.create_notesbook()
 
@@ -74,11 +74,12 @@ class UserAccount():
         deciphered_adr_file = ciphers.decrypt(ciphered_adr_file).decode()
         deciphered_note_file = ciphers.decrypt(ciphered_note_file).decode()
         print(f'Deciphered Login: {deciphered_login} Password:{password}') # if ok to ok if not ok good bye)
-        if login == deciphered_login and password == deciphered_password:
-            self._user_name = deciphered_login
-            self._user_password = deciphered_password
-            self._addres_book = deciphered_adr_file
-            self._Notes_book = deciphered_note_file
+        return[deciphered_login,deciphered_password,deciphered_adr_file,deciphered_note_file]
+        # if login == deciphered_login and password == deciphered_password:
+        #     self._user_name = deciphered_login
+        #     self._user_password = deciphered_password
+        #     self._addres_book = deciphered_adr_file
+        #     self._Notes_book = deciphered_note_file
             
         
 
@@ -105,7 +106,16 @@ class UserAccount():
     def login(self): # Login Func
         login = input('Input Login:')
         password = input('Input Password:')
-        return self.descriptor(login,password)
+        deciphered_info =   self.descriptor(login,password)
+        if login != deciphered_info[0] or password != deciphered_info[1]:
+            print('Incorect Loggin or Password')
+            return False
+        else:
+            self._user_name = deciphered_info[0]
+            self._user_password = deciphered_info[1]
+            self._addres_book = deciphered_info[2]
+            self._Notes_book = deciphered_info[3]
+            return True
         
     def account_property(self):
         pass
@@ -157,12 +167,15 @@ class LoginCMD(cmd.Cmd):
     #     self.postloop()
     
     def do_sing_in(self,*args):
-        self.userAccount.login()
-        botcmd = MyCmd()
-        botcmd.adr =  str(self.userAccount._addres_book)
-        botcmd.notes_book = NotesBook(self.userAccount._Notes_book)
-        botcmd.book = AddressBook(self.userAccount._addres_book)
-        botcmd.cmdloop()
+        
+        if self.userAccount.login():
+            botcmd = MyCmd()
+            botcmd.adr =  str(self.userAccount._addres_book)
+            botcmd.notes_book = NotesBook(self.userAccount._Notes_book)
+            botcmd.book = AddressBook(self.userAccount._addres_book)
+            botcmd.cmdloop()
+
+    
     def do_register(self,*args):
         self.userAccount.register_account()
 

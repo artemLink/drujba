@@ -5,10 +5,10 @@ import re
 
 
 class NotesBook(UserList):
-    def __init__(self):
+    def __init__(self , file_name):
         self.data = []
         self.exiting_data = []
-        self.json_file_name = 'Notes.json'
+        self.json_file_name = file_name
         self.last_id = 0
         self.load_notes()
 
