@@ -30,7 +30,9 @@ class UserAccount():
         self._Notes_book = None
         
     def register_account(self): # Register Func
+        self._user_password = UserPassword(None)
         self._user_name = input('Input Login:')
+        print(self._user_name)
         self._account = os.path.join(FOLDER_ACCOUNTS_PATH,f'{self._user_name}_account.txt')
         self._user_password.pass_ok()
         self._addres_book = os.path.join(FOLDER_ADDRESSBOOKS_PATH,f'{self._user_name}_AddressBook.json')
@@ -61,8 +63,7 @@ class UserAccount():
     
     def descriptor(self,login,password): 
         path = os.path.join(FOLDER_ACCOUNTS_PATH,f'{login}_account.txt')  # Open Account Data
-        if os.path.exists(path):
-                
+        if os.path.exists(path):   
             with open(path, 'r') as file:
                 data = file.readlines()
             key = data[0].strip() # get cipheres Key
@@ -176,6 +177,7 @@ class LoginCMD(cmd.Cmd):
             botcmd.adr =  str(self.userAccount._addres_book)
             botcmd.notes_book = NotesBook(self.userAccount._Notes_book)
             botcmd.book = AddressBook(self.userAccount._addres_book)
+            botcmd.do_help()
             botcmd.cmdloop()
 
     
