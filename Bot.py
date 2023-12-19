@@ -32,8 +32,12 @@ class MyCmd(cmd.Cmd):
          "make_rec",
          "find_rec",
          "del_rec",
-         "edit_rec",
+         "del_comp_rec",
+         "edit_ph_rec",
+         "edit_tag_rec",
          "cong_rec",
+         "exp_tag",
+         "add_comp_rec",
          ])
     intro = tprint("designed  by  DRUJBA  team")
 
@@ -99,10 +103,18 @@ class MyCmd(cmd.Cmd):
                       "Search in addressbook")
         table.add_row("del_rec",
                       "Deletes record in addressbook by name (use search before use)")
-        table.add_row("edit_rec",
-                      "Edites record in addressbook")
+        table.add_row("edit_ph_rec",
+                      "Edites phone to record in addressbook by name (use search before use)")
+        table.add_row("edit_tag_rec",
+                      "Edites tag to record in addressbook by name (use search before use)")
         table.add_row("cong_rec",
                       "Search contacts by birthday")
+        table.add_row("exp_tag",
+                      "Exports contacts by tag to a JSON file (use search before use)")
+        table.add_row("add_comp_rec",
+                      "Adds a company to a record in the address book by name (use search before use)")
+        table.add_row("del_comp_rec",
+                      "Deletes company in addressbook by name (use search before use)")
         table.add_row("----",
                       "-----------------------------------")
         table.add_row("sort_by_type",
@@ -287,9 +299,55 @@ class MyCmd(cmd.Cmd):
         question = input(command_message("Enter name to detete>>> "))
         print(self.book.remove_record(question))
 
-    def do_edit_rec(self, *args):
-        "Edites record in addressbook"
-        pass
+    def do_edit_ph_rec(self, *args):
+        "Edites phone to record in addressbook by name"
+        question_name = input(command_message(
+            "Enter the name of the record to edit>>> "))
+        if question_name != "":
+            record_to_edit = self.book.find_record(question_name)
+            if record_to_edit:
+                edit_old_ph = input(command_message(
+                    "Enter the old phone number>>> "))
+                edit_new_ph = input(command_message(
+                    "Enter the new phone number>>> "))
+                if edit_old_ph and edit_new_ph:
+                    try:
+                        exiting_record_str = self.book.find_exiting_record(
+                            record_to_edit.name.get_name)
+                        self.book.edit_phone(
+                            record_to_edit, exiting_record_str, edit_old_ph, edit_new_ph)
+                        print(positive_action("Phone edit successful"))
+                    except Exception as ve:
+                        print(error_message("No changes made to the phone number."))
+                else:
+                    print(error_message("No changes made to the phone number."))
+        else:
+            print(error_message(
+                f"No record found with the name: {question_name}"))
+
+    def do_edit_tag_rec(self, *args):
+        "Edits tag to record in addressbook by name"
+        question_name = input(command_message(
+            "Enter the name of the record to edit>>> "))
+        if question_name != "":
+            record_to_edit = self.book.find_record(question_name)
+            if record_to_edit:
+                old_tag = input(command_message("Enter the old tag>>> "))
+                new_tag = input(command_message("Enter the new tag>>> "))
+                if old_tag and new_tag:
+                    try:
+                        exiting_record_str = self.book.find_exiting_record(
+                            record_to_edit.name.get_name)
+                        self.book.edit_teg(
+                            record_to_edit, exiting_record_str, old_tag, new_tag)
+                        print(positive_action("Tag edit successful"))
+                    except Exception as ve:
+                        print(error_message("No changes made to the tag."))
+                else:
+                    print(error_message("No changes made to the tag."))
+        else:
+            print(error_message(
+                f"No record found with the name: {question_name}"))
 
     def do_cong_rec(self, *args):
         "Search contacts by birthday"
@@ -319,6 +377,31 @@ class MyCmd(cmd.Cmd):
             self.console.print(table)
         else:
             print(error_message("No record found."))
+
+    # не працює
+    def do_exp_tag(self, *args):
+        "Exports contacts by tag to a JSON file"
+        tag_to_export = input(command_message(
+            "Enter the tag to export contacts: "))
+
+        if tag_to_export != "":
+            try:
+                self.book.export_contacts_by_tag(tag_to_export)
+                print(positive_action(
+                    f'Contacts with tag "{tag_to_export}" exported successfully!'))
+            except Exception as e:
+                print(error_message(f'Error exporting contacts: {str(e)}'))
+        else:
+            print(error_message("Tag cannot be empty."))
+
+    def do_add_comp_rec(self, *args):
+        "Adds a company to a record in the address book by name"
+        # record_name = input(command_message("Enter the name of the record to add a company: "))
+        pass
+
+    def do_del_comp_rec(self, *args):
+        "Deletes company in addressbook"
+        pass
 
 
 if __name__ == "__main__":
