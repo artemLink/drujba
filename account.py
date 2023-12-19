@@ -61,25 +61,24 @@ class UserAccount():
     
     def descriptor(self,login,password): 
         path = os.path.join(FOLDER_ACCOUNTS_PATH,f'{login}_account.txt')  # Open Account Data
-        with open(path, 'r') as file:
-            data = file.readlines()
-        key = data[0].strip() # get cipheres Key
-        ciphered_login = data[1].strip() # get cipheres Login
-        ciphered_password = data[2].strip() # get cipheres pass
-        ciphered_adr_file = data[3].strip() # get adressbook path
-        ciphered_note_file = data[4].strip() # get notebook path
-        ciphers = Fernet(key) 
-        deciphered_login = ciphers.decrypt(ciphered_login).decode() # decrypt login
-        deciphered_password = ciphers.decrypt(ciphered_password).decode() # decryt Password
-        deciphered_adr_file = ciphers.decrypt(ciphered_adr_file).decode()
-        deciphered_note_file = ciphers.decrypt(ciphered_note_file).decode()
-        #print(f'Deciphered Login: {deciphered_login} Password:{password}') # if ok to ok if not ok good bye)
-        return[deciphered_login,deciphered_password,deciphered_adr_file,deciphered_note_file]
-        # if login == deciphered_login and password == deciphered_password:
-        #     self._user_name = deciphered_login
-        #     self._user_password = deciphered_password
-        #     self._addres_book = deciphered_adr_file
-        #     self._Notes_book = deciphered_note_file
+        if os.path.exists(path):
+                
+            with open(path, 'r') as file:
+                data = file.readlines()
+            key = data[0].strip() # get cipheres Key
+            ciphered_login = data[1].strip() # get cipheres Login
+            ciphered_password = data[2].strip() # get cipheres pass
+            ciphered_adr_file = data[3].strip() # get adressbook path
+            ciphered_note_file = data[4].strip() # get notebook path
+            ciphers = Fernet(key) 
+            deciphered_login = ciphers.decrypt(ciphered_login).decode() # decrypt login
+            deciphered_password = ciphers.decrypt(ciphered_password).decode() # decryt Password
+            deciphered_adr_file = ciphers.decrypt(ciphered_adr_file).decode()
+            deciphered_note_file = ciphers.decrypt(ciphered_note_file).decode()
+        
+            return[deciphered_login,deciphered_password,deciphered_adr_file,deciphered_note_file]
+        else:
+            return False
             
         
 
@@ -106,8 +105,12 @@ class UserAccount():
     def login(self): # Login Func
         login = input('Input Login:')
         password = input('Input Password:')
-        deciphered_info =   self.descriptor(login,password)
-        if login != deciphered_info[0] or password != deciphered_info[1]:
+        deciphered_info = self.descriptor(login,password)
+        
+        
+        
+        if deciphered_info == False or login != deciphered_info[0] or password != deciphered_info[1]:
+            
             print('Incorect Login or Password. Try Again')
             return False
         else:
