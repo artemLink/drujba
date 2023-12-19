@@ -146,28 +146,27 @@ class LoginCMD(cmd.Cmd):
     
     
     
-    # word_completer = WordCompleter(
-    #     ['sing_in','sing_up',"exit"])
+    word_completer = WordCompleter(['login','register',"exit"])
     intro = tprint("designed  by  DRUJBA  team")
-    prompt = 'Enter Command:'
+    
 
     
-    # def cmdloop(self, intro=None):
-    #     self.preloop()
-    #     if self.intro:
-    #         self.console.print(self.intro)
-    #     stop = None
-    #     while not stop:
-    #         try:
-    #             session = PromptSession()
-    #             user_input = session.prompt(
-    #                 "Input command>>> ", completer=self.word_completer)
-    #             stop = self.onecmd(user_input)
-    #         except KeyboardInterrupt:
-    #             print("^C")
-    #     self.postloop()
+    def cmdloop(self, intro=None):
+        self.preloop()
+        if self.intro:
+            self.console.print(self.intro)
+        stop = None
+        while not stop:
+            try:
+                session = PromptSession()
+                user_input = session.prompt(
+                    "Input command>>> ", completer=self.word_completer)
+                stop = self.onecmd(user_input)
+            except KeyboardInterrupt:
+                print("^C")
+        self.postloop()
     
-    def do_sing_in(self,*args):
+    def do_login(self,*args):
         
         if self.userAccount.login():
             botcmd = MyCmd()
@@ -191,7 +190,7 @@ if __name__ == '__main__':
     table = Table()
     table.add_column("Welcome To Help Assistant", style="bright_magenta")
     
-    table.add_row(f'sing_in  ---> Log in to the application ')
+    table.add_row(f'login    ---> Log in to the application ')
     table.add_row(f'register ---> Register an account')
     console.print(table)
     logcmd = LoginCMD()
