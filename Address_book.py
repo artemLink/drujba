@@ -378,7 +378,7 @@ class AddressBook(UserList):
                 find_contacts.append(item)
                 continue
 
-        return ''.join([str(item) + '\n' for item in find_contacts])
+        return find_contacts
 
     @input_error
     def congratulation(self, days_to_happy: str):
