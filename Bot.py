@@ -36,7 +36,7 @@ class MyCmd(cmd.Cmd):
          "edit_ph_rec",
          "edit_tag_rec",
          "cong_rec",
-         # "exp_tag",
+         "exp_tag",
          # "add_comp_rec",
          ])
     intro = tprint("designed  by  DRUJBA  team")
@@ -385,19 +385,15 @@ class MyCmd(cmd.Cmd):
         "Import file in contacts"
         file = input(command_message("Enter filename>>> "))
         self.book.import_files(file)
-    # не працює
-    # def do_exp_tag(self, *args):
-    #     "Exports contacts by tag to a JSON file"
-    #     tag_to_export = input(command_message(
-    #         "Enter the tag to export contacts: "))
+    def do_exp_tag(self, *args):
+        "Exports contacts by tag to a JSON file"
+        tag_to_export = input(command_message(
+            "Enter the tag to export contacts: "))
 
-    #     if tag_to_export != "":
-    #         try:
-    #             self.book.export_contacts_by_tag(tag_to_export)
-    #             print(positive_action(
-    #                 f'Contacts with tag "{tag_to_export}" exported successfully!'))
-    #         except Exception as e:
-    #             print(error_message(f'Error exporting contacts: {str(e)}'))
+        if tag_to_export != "":
+                self.book.export_contacts_by_tag(tag_to_export)
+        else:
+            print(error_message("Tag cannot be empty."))
     #     else:
     #         print(error_message("Tag cannot be empty."))
 
