@@ -8,10 +8,10 @@ import os
 
 
 class AddressBook(UserList):
-    def __init__(self):
+    def __init__(self, file_name):
         self.data = []
         self.exiting_data = []
-        self.json_file_name = 'Contacts.json'
+        self.json_file_name = file_name
         self.load_contacts()
 
     def set_id(self):
@@ -142,7 +142,7 @@ class AddressBook(UserList):
         record = Record(dict['Name'], dict['ID'])
 
         record.birthday.set_birthday = dict['Birthday']
-        [record.phones.append(Phone(item)) for item in dict['Phones']]
+        [record.phones.append(Phone(item)) for item in dict['Phones'] if item is not None] 
         record.email.set_email = dict['Email']
         if "Comment" in dict:
             record.comment.set_comment = dict['Comment']

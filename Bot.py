@@ -12,8 +12,8 @@ from prompt_toolkit.completion import WordCompleter
 
 
 class MyCmd(cmd.Cmd):
-    book = AddressBook()
-    notes_book = NotesBook()
+    book = None
+    notes_book = None
     console = Console()
     # випадаючі команди
     word_completer = WordCompleter(
