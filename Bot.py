@@ -337,7 +337,7 @@ class MyCmd(cmd.Cmd):
             if record_to_edit:
                 old_tag = input(command_message("Enter the old tag>>> "))
                 new_tag = input(command_message("Enter the new tag>>> "))
-                if old_tag and new_tag:
+                if new_tag:
                     try:
                         exiting_record_str = self.book.find_exiting_record(
                             record_to_edit.name.get_name)
