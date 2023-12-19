@@ -73,7 +73,7 @@ class UserAccount():
         deciphered_password = ciphers.decrypt(ciphered_password).decode() # decryt Password
         deciphered_adr_file = ciphers.decrypt(ciphered_adr_file).decode()
         deciphered_note_file = ciphers.decrypt(ciphered_note_file).decode()
-        print(f'Deciphered Login: {deciphered_login} Password:{password}') # if ok to ok if not ok good bye)
+        #print(f'Deciphered Login: {deciphered_login} Password:{password}') # if ok to ok if not ok good bye)
         return[deciphered_login,deciphered_password,deciphered_adr_file,deciphered_note_file]
         # if login == deciphered_login and password == deciphered_password:
         #     self._user_name = deciphered_login
@@ -108,7 +108,7 @@ class UserAccount():
         password = input('Input Password:')
         deciphered_info =   self.descriptor(login,password)
         if login != deciphered_info[0] or password != deciphered_info[1]:
-            print('Incorect Loggin or Password')
+            print('Incorect Login or Password. Try Again')
             return False
         else:
             self._user_name = deciphered_info[0]
@@ -151,6 +151,7 @@ class LoginCMD(cmd.Cmd):
     intro = tprint("designed  by  DRUJBA  team")
     prompt = 'Enter Command:'
 
+    
     # def cmdloop(self, intro=None):
     #     self.preloop()
     #     if self.intro:
@@ -186,9 +187,16 @@ class LoginCMD(cmd.Cmd):
         
 
 if __name__ == '__main__':
+    console = Console()
+    table = Table()
+    table.add_column("Welcome To Help Assistant", style="bright_magenta")
+    
+    table.add_row(f'sing_in  ---> Log in to the application ')
+    table.add_row(f'register ---> Register an account')
+    console.print(table)
     logcmd = LoginCMD()
     logcmd.cmdloop()
-
+    
 
 
 
