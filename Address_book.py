@@ -393,10 +393,4 @@ class AddressBook(UserList):
 
                     if int(days_to_happy) == (next_birthday - current_date).days:
                         happy_list.append(record)
-        if happy_list:
-            print(positive_action(
-                f'**************************** Birthday in {days_to_happy} days from today! ****************************'))
-            for item in happy_list:
-                print(item)
-        else:
-            print(positive_action(f'The list of people to congratulate in {days_to_happy} days is empty.'))
+        return happy_list
