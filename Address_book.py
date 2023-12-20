@@ -41,7 +41,8 @@ class AddressBook(UserList):
     def add_full_record(self, name):
         record = Record(name, int(self.set_id()))
         record.phones.append(Phone(input(command_message('Enter Phone: '))))
-        record.birthday.set_birthday = input(command_message('Enter Birthday YYYY-MM-DD: '))
+        record.birthday.set_birthday = input(
+            command_message('Enter Birthday YYYY-MM-DD: '))
         record.email.set_email = input(command_message('Enter Email: '))
         record.comment.set_comment = input(command_message('Enter comment: '))
         record.address.set_address = input(command_message('Enter address: '))
@@ -70,35 +71,38 @@ class AddressBook(UserList):
         self.save_contacts()
         return positive_action(f'{record.name.get_name} removed.')
 
-    def export_contacts_by_tag(self, tag: str):
-        filtered_records = [record for record in self.data if
-                            tag.lower() in [item.get_tag().lower() for item in record.tags]]
+    def export_contacts_by_tag(self, target_tag: str):
+        filtered_records = []
+        for cont in self.data:
+            for element in cont.tags:
+                if element == Tag(target_tag):
+                    filtered_records.append(cont)
 
         if filtered_records:
-            tag_file_name = f'Contacts_{tag.lower()}.json'
+            tag_file_name = f'Contacts_{target_tag.lower()}.json'
 
             tag_data = []
             for record in filtered_records:
-                serialize_record = {
-                    'Name': record.name.get_name(),
-                    'ID': record.id.get_id(),
-                    'Phones': [item.get_phone() for item in record.phones],
-                    'Birthday': record.birthday.get_birthday().strftime('%Y-%m-%d') if isinstance(
-                        record.birthday.get_birthday(), date) else None,
-                    'Email': record.email.get_email(),
-                    'Comment': record.comment.get_comment(),
-                    'Address': record.address.get_address(),
-                    'Company': record.company.get_company(),
-                    'Tags': [item.get_tag() for item in record.tags],
-                }
+                serialize_record = {'Name': record.name.get_name,
+                                    'ID': record.id.get_id,
+                                    'Phones': [item.get_phone for item in record.phones],
+                                    'Birthday': record.birthday.get_birthday.strftime('%Y-%m-%d') if isinstance(
+                                        record.birthday.get_birthday, date) else None,
+                                    'Email': record.email.get_email,
+                                    'Comment': record.comment.get_comment,
+                                    'Address': record.address.get_address,
+                                    'Company': record.company.get_company,
+                                    'Tags': [item.get_tag for item in record.tags],
+                                    }
                 tag_data.append(serialize_record)
 
             with open(tag_file_name, 'w') as tag_fh:
                 json.dump(tag_data, tag_fh, indent=1)
-                print(f'{tag_file_name} successfully exported!')
+                print("Success")
         else:
-            print(f'No contacts found for the tag: {tag}')
+            print("Noooooo")
 
+    @input_error
     def import_files(self, file):
         script_directory = os.path.dirname(os.path.abspath(__file__))
         source_filepath = os.path.join(script_directory, self.json_file_name)
@@ -147,7 +151,8 @@ class AddressBook(UserList):
         record = Record(dict['Name'], dict['ID'])
 
         record.birthday.set_birthday = dict['Birthday']
-        [record.phones.append(Phone(item)) for item in dict['Phones'] if item is not None] 
+        [record.phones.append(Phone(item))
+         for item in dict['Phones'] if item is not None]
         record.email.set_email = dict['Email']
         if "Comment" in dict:
             record.comment.set_comment = dict['Comment']
@@ -175,7 +180,8 @@ class AddressBook(UserList):
         return f"{positive_action('Company')} {book_style(record.company.get_company)} {positive_action('removed')}"
 
     @input_error
-    def add_comment(self, record: Record, serialize_record, comment):  # Додавання або зміна все існуючого коментаря
+    # Додавання або зміна все існуючого коментаря
+    def add_comment(self, record: Record, serialize_record, comment):
         record.comment.set_comment = comment
         serialize_record['Comment'] = comment
         self.save_contacts()
@@ -186,10 +192,12 @@ class AddressBook(UserList):
         record.comment.set_comment = None
         serialize_record['Comment'] = None
         self.save_contacts()
-        return f'{positive_action("Comment")} {book_style(record.comment.get_comment)} {positive_action("removed.")}'  # Виправив помилку
+        # Виправив помилку
+        return f'{positive_action("Comment")} {book_style(record.comment.get_comment)} {positive_action("removed.")}'
 
     @input_error
-    def add_address(self, record: Record, serialize_record, address):  # Додавання або зміна вже існуючого адреса
+    # Додавання або зміна вже існуючого адреса
+    def add_address(self, record: Record, serialize_record, address):
         record.address.set_address = address
         serialize_record['Address'] = address
         self.save_contacts()
@@ -219,14 +227,13 @@ class AddressBook(UserList):
                 item.set_tag = new_tag
                 break
 
-
         for index, item in enumerate(serialize_record['Tags']):
             if item == old_tag:
                 serialize_record['Tags'][index] = new_tag
-                break
+                return True
             elif item is "":
                 serialize_record['Tags'][index] = new_tag
-                break
+                return True
 
         self.save_contacts()
 
@@ -238,7 +245,8 @@ class AddressBook(UserList):
             for removed_tag in removed_tags:
                 record.tags.remove(removed_tag)
 
-            serialize_record['Tags'] = [item for item in serialize_record['Tags'] if item != tag]
+            serialize_record['Tags'] = [
+                item for item in serialize_record['Tags'] if item != tag]
             self.save_contacts()
         else:
             raise ValueError("Tags is not found.")
@@ -260,18 +268,20 @@ class AddressBook(UserList):
         for index, item in enumerate(serialize_record['Phones']):
             if item == old_phone:
                 serialize_record['Phones'][index] = new_phone
-                break
+                return True
         self.save_contacts()
 
     @input_error
     def remove_phone(self, record: Record, serialize_record, phone):
         if not record.phones:
             return error_message('Phone is None!')
-        removed_phones = [item for item in record.phones if item.get_phone == phone]
+        removed_phones = [
+            item for item in record.phones if item.get_phone == phone]
         if removed_phones:
             for removed_phone in removed_phones:
                 record.phones.remove(removed_phone)
-            serialize_record['Phones'] = [item for item in serialize_record['Phones'] if item != phone]
+            serialize_record['Phones'] = [
+                item for item in serialize_record['Phones'] if item != phone]
             self.save_contacts()
             return f'{positive_action("Phone number")} {phone} {positive_action("successfully removed.")}'
         else:
@@ -324,8 +334,7 @@ class AddressBook(UserList):
             if item.name.get_name == name:
                 records.append(item)
         if len(records) > 1:
-            self.show_records(records)
-            return self.find_record_id(int(input(command_message('Enter Contact ID: '))))
+            return records
         elif len(records) == 0:
             raise ValueError(f'{name} Not found!')
         else:
@@ -347,7 +356,8 @@ class AddressBook(UserList):
         if name == None:
 
             for item in self.iterator(50):
-                print(positive_action(f'Page: {page} ------------------------------------------------'))
+                print(positive_action(
+                    f'Page: {page} ------------------------------------------------'))
                 print(item)
                 page += 1
 
@@ -429,9 +439,11 @@ class AddressBook(UserList):
         if 0 <= int(days_to_happy) <= 365:
             for record in self.data:
                 if record.birthday.get_birthday:
-                    next_birthday = record.birthday.get_birthday.replace(year=current_date.year)
+                    next_birthday = record.birthday.get_birthday.replace(
+                        year=current_date.year)
                     if next_birthday < current_date:
-                        next_birthday = record.birthday.get_birthday.replace(year=current_date.year + 1)
+                        next_birthday = record.birthday.get_birthday.replace(
+                            year=current_date.year + 1)
 
                     if int(days_to_happy) == (next_birthday - current_date).days:
                         happy_list.append(record)

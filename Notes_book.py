@@ -2,10 +2,11 @@ from collections import UserList
 from Notes import NotesRecord, Tag
 import json
 import re
+from decorators import input_error
 
 
 class NotesBook(UserList):
-    def __init__(self , file_name):
+    def __init__(self, file_name):
         self.data = []
         self.exiting_data = []
         self.json_file_name = file_name
@@ -65,6 +66,7 @@ class NotesBook(UserList):
                 self.data.append(self.deserialize(item))
 
     # введення нотатки
+    @input_error
     def add_note(self,  input_title: str, input_note: str):
         calc_id = self.set_id()
         rec_note = NotesRecord(
@@ -74,6 +76,7 @@ class NotesBook(UserList):
         self.serialize_to_json(rec_note)
 
     # додавання тегів
+    @input_error
     def add_tag(self, input_tag: str, find_to_id=None):
         find_to_id = self.last_id if find_to_id == None else int(find_to_id)
         self.data[find_to_id-1].tag.append(Tag(input_tag))
@@ -140,6 +143,7 @@ class NotesBook(UserList):
                     self.data.pop(index)
 
     # редагування заголовку
+    @input_error
     def edit_title(self, input_id: str, input_string: str):
         if input_id != '':
             for index, item in enumerate(self.data):
