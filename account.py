@@ -16,23 +16,40 @@ from Style import positive_action
 from Bot import MyCmd
 from Notes_book import NotesBook
 from Address_book import AddressBook
-    
+from Style import positive_action,error_message
 
     
 class UserAccount():
     
     def __init__(self,user_name=None, user_email=None,user_password=None,):
         self._user_name = user_name
-        self._user_email = user_email
+        
         self._user_password = UserPassword(user_password)
         self._account = None
         self._addres_book = None
         self._Notes_book = None
+        self._email = 'None'
+        self._email_password = 'None'
+    
+    def __str__(self):
+        return f'UserName = {self._user_name} UserPassword = {self._user_password._password} \n addresbook = {self._addres_book} \n notesbook = {self._Notes_book} \n Email = {self._email} \n Epasword = {self._email_password} '
         
     def register_account(self): # Register Func
+        
+        txt_files = [file for file in os.listdir(FOLDER_ACCOUNTS_PATH) if file.endswith(".txt")]
+        names = []
+        for txt_file in txt_files:
+            names.append(txt_file.replace('_account.txt',''))
+        
+
+        
         self._user_password = UserPassword(None)
-        self._user_name = input('Input Login:')
-        print(self._user_name)
+        login = input('Input Login:')
+        if login in names:
+            print(error_message('This login is already taken'))
+            return 
+        self._user_name = login
+       
         self._account = os.path.join(FOLDER_ACCOUNTS_PATH,f'{self._user_name}_account.txt')
         self._user_password.pass_ok()
         self._addres_book = os.path.join(FOLDER_ADDRESSBOOKS_PATH,f'{self._user_name}_AddressBook.json')
@@ -40,11 +57,6 @@ class UserAccount():
         self.create_AdressBook()
         self.create_notesbook()
 
-        
-        
-        
-        print(self._user_password)
-        print(self._user_name)
         self.encryptor(self._user_name,self._user_password._password)
         
     def encryptor(self,login,password):
@@ -54,12 +66,17 @@ class UserAccount():
         encrypt_password = chipers.encrypt(password.encode()) #encrypt Pass
         encrypt_address_book = chipers.encrypt(self._addres_book.encode())
         encrypt_notes_book = chipers.encrypt(self._Notes_book.encode())
+        encript_email = chipers.encrypt(self._email.encode())
+        encript_email_password = chipers.encrypt(self._email_password.encode())
+        
         with open(self._account, 'wb') as file: # Save Info
             file.write(key + b'\n')
             file.write(encrypt_login + b'\n')
             file.write(encrypt_password + b'\n')
             file.write(encrypt_address_book + b'\n')
-            file.write(encrypt_notes_book)
+            file.write(encrypt_notes_book + b'\n')
+            file.write(encript_email + b'\n')
+            file.write(encript_email_password)
     
     def descriptor(self,login,password): 
         path = os.path.join(FOLDER_ACCOUNTS_PATH,f'{login}_account.txt')  # Open Account Data
@@ -71,18 +88,28 @@ class UserAccount():
             ciphered_password = data[2].strip() # get cipheres pass
             ciphered_adr_file = data[3].strip() # get adressbook path
             ciphered_note_file = data[4].strip() # get notebook path
+            ciphered_email = data[5].strip()
+            ciphered_emailpassword = data[6].strip()
+
             ciphers = Fernet(key) 
-            deciphered_login = ciphers.decrypt(ciphered_login).decode() # decrypt login
-            deciphered_password = ciphers.decrypt(ciphered_password).decode() # decryt Password
-            deciphered_adr_file = ciphers.decrypt(ciphered_adr_file).decode()
-            deciphered_note_file = ciphers.decrypt(ciphered_note_file).decode()
-        
-            return[deciphered_login,deciphered_password,deciphered_adr_file,deciphered_note_file]
+            self._user_name = ciphers.decrypt(ciphered_login).decode() # decrypt login
+            self._user_password._password = ciphers.decrypt(ciphered_password).decode() # decryt Password
+            self._addres_book = ciphers.decrypt(ciphered_adr_file).decode()
+            self._Notes_book = ciphers.decrypt(ciphered_note_file).decode()
+            
+            
+            
+            self._email = ciphers.decrypt(ciphered_email).decode() 
+            self._email_password = ciphers.decrypt(ciphered_emailpassword).decode()
+            
+            return self
         else:
+           
             return False
             
-        
-
+    
+    
+                
             
 
 
@@ -106,23 +133,22 @@ class UserAccount():
     def login(self): # Login Func
         login = input('Input Login:')
         password = input('Input Password:')
-        deciphered_info = self.descriptor(login,password)
+        user_acc = self.descriptor(login,password)
         
-        
-        
-        if deciphered_info == False or login != deciphered_info[0] or password != deciphered_info[1]:
+        if user_acc == False or login != user_acc._user_name or password != user_acc._user_password._password:
             
-            print('Incorect Login or Password. Try Again')
+            print(error_message('Invalid Login or Password. Try Again'))
+            
+            
             return False
         else:
-            self._user_name = deciphered_info[0]
-            self._user_password = deciphered_info[1]
-            self._addres_book = deciphered_info[2]
-            self._Notes_book = deciphered_info[3]
-            return True
-        
-    def account_property(self):
-        pass
+            print(user_acc)
+            return user_acc
+    
+    def add_email(self, email,password):
+        self._email = email
+        self._email_password = password
+        self.encryptor(self._user_name,self._user_password._password)
 
 class UserPassword():
     def __init__(self,password=None) -> None:
@@ -139,14 +165,13 @@ class UserPassword():
             self._password = password
     def __str__(self) -> str:
         return f'{self._password}'
-# acc = UserAccount()
-# print(acc.register_account())
-# print(acc.login())
+
 
 
 
 class LoginCMD(cmd.Cmd):
     userAccount = UserAccount()
+    
     
     
     
@@ -172,18 +197,20 @@ class LoginCMD(cmd.Cmd):
     
     def do_login(self,*args):
         
+        
         if self.userAccount.login():
             botcmd = MyCmd()
             botcmd.adr =  str(self.userAccount._addres_book)
             botcmd.notes_book = NotesBook(self.userAccount._Notes_book)
             botcmd.book = AddressBook(self.userAccount._addres_book)
+            
+            botcmd.book.user_info = self.userAccount
+            botcmd.book.user_info._account = os.path.join(FOLDER_ACCOUNTS_PATH,f'{botcmd.book.user_info._user_name}_account.txt')
             botcmd.do_help()
             botcmd.cmdloop()
-
-    
     def do_register(self,*args):
         self.userAccount.register_account()
-
+    
     def do_exit(self, *args):
         "Exit from bot"
         print(positive_action("Good bye!"))
@@ -192,12 +219,13 @@ class LoginCMD(cmd.Cmd):
 
 if __name__ == '__main__':
     console = Console()
-    table = Table()
-    table.add_column("Welcome To Help Assistant", style="bright_magenta")
-    
-    table.add_row(f'login    ---> Log in to the application ')
-    table.add_row(f'register ---> Register an account')
-    console.print(table)
+    table = Table(show_header=True, header_style="bold cyan")
+    table.add_column("Welcome To Help Assistant", style="bright_magenta", width=100,vertical='middle', justify='center')
+
+    table.add_row("login    ---> Log in to the application")
+    table.add_row("register ---> Register an account",) 
+
+    console.print(table, width=100, style="bold magenta" )
     logcmd = LoginCMD()
     logcmd.cmdloop()
     
