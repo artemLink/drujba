@@ -331,7 +331,7 @@ class AddressBook(UserList):
     def find_record(self, name) -> Record:
         records = []
         for item in self.data:
-            if item.name.get_name == name:
+            if item.name.get_name == name.capitalize():
                 records.append(item)
         if len(records) > 1:
             return records
@@ -347,7 +347,7 @@ class AddressBook(UserList):
 
     def find_exiting_record(self, name):
         for item in self.exiting_data:
-            if item['Name'] == name:
+            if item['Name'] == name.capitalize():
                 return item
 
     @input_error
