@@ -11,9 +11,10 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
 
 
+
 class MyCmd(cmd.Cmd):
-    book = 'Contacts.json'
-    notes_book = 'Notes.json'
+    book = AddressBook('Contacts.json')
+    notes_book = NotesBook('Notes.json')
     console = Console()
     # випадаючі команди
     word_completer = WordCompleter(
@@ -267,6 +268,7 @@ class MyCmd(cmd.Cmd):
         "Make a record to addressbook"
         input_name = input("Enter name>>> ")
         print(self.book.add_full_record(input_name))
+    
 
     def do_find_rec(self, *args):
         "Search in addressbook"
@@ -385,6 +387,21 @@ class MyCmd(cmd.Cmd):
         "Import file in contacts"
         file = input(command_message("Enter filename>>> "))
         self.book.import_files(file)
+    
+    def do_info(self, *args):
+      #####################################  
+        print(self.user_info._email)
+    def do_set_up_email(self, *args):
+      #####################################  
+        self.book.set_up_email()
+    def do_sm(self, *args):
+        self.book.message_sender([self.book.data[0]])
+    def do_send(self, *args):
+        self.book.send_message()
+    def do_edit_email(self,*args):
+        email = input('Enter Email:')
+        password = input('Enter Password')
+        self.book.user_info.add_email(email,password)
     # не працює
     # def do_exp_tag(self, *args):
     #     "Exports contacts by tag to a JSON file"
