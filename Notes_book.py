@@ -128,7 +128,7 @@ class NotesBook(UserList):
         if input_id != '':
             for index, item in enumerate(self.data):
                 if item.note_id.get_id == int(input_id):
-                    print(index)
+                    # print(index)
                     self.data[index].note.set_note = input_string
 
     # видалення нотатки
@@ -136,7 +136,7 @@ class NotesBook(UserList):
         if input_id != '':
             for index, item in enumerate(self.data):
                 if item.note_id.get_id == int(input_id):
-                    print(index)
+                    # print(index)
                     self.data.pop(index)
 
     # редагування заголовку
@@ -144,5 +144,5 @@ class NotesBook(UserList):
         if input_id != '':
             for index, item in enumerate(self.data):
                 if item.note_id.get_id == int(input_id):
-                    print(index)
+                    # print(index)
                     self.data[index].title.set_title = input_string
