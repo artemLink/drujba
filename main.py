@@ -7,7 +7,6 @@ if __name__ == '__main__':
     bot = Bot()
     is_active_aplication = True
     while is_active_aplication:
-        #style.show_all_collor()
         action = input(command_message('Command: ')).lower()
         if action == 'exit':
             is_active_aplication = False

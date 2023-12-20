@@ -12,8 +12,8 @@ from prompt_toolkit.completion import WordCompleter
 
 
 class MyCmd(cmd.Cmd):
-    book = None
-    notes_book = None
+    book = 'Contacts.json'
+    notes_book = 'Notes.json'
     console = Console()
     # випадаючі команди
     word_completer = WordCompleter(
