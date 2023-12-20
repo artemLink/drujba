@@ -527,6 +527,21 @@ class MyCmd(cmd.Cmd):
 
         if file != "":
             self.book.import_files(file)
+        self.book.import_files(file)
+    
+    # def do_info(self, *args):
+    #     print(self.user_info._email)
+    def do_set_up_email(self, *args):
+     
+        self.book.set_up_email()
+    def do_sm(self, *args):
+        self.book.message_sender([self.book.data[0]])
+    def do_send(self, *args):
+        self.book.send_message()
+    def do_edit_email(self,*args):
+        email = input('Enter Email:')
+        password = input('Enter Password')
+        self.book.user_info.add_email(email,password)
 
     def do_exp_tag(self, *args):
         "Exports contacts by tag to a JSON file"
