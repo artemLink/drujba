@@ -323,6 +323,7 @@ class AddressBook(UserList):
 
         return f'{book_style(old_name)} {positive_action("changed")} {book_style(record.name.get_name)}.'
 
+    @input_error
     def find_record(self, name) -> Record:
         records = []
         for item in self.data:
