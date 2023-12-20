@@ -1,4 +1,5 @@
 from Address_book import AddressBook
+from Record import Record
 from Style import command_message, error_message, positive_action
 from Notes_book import NotesBook
 from sort_files import sort_by_type
@@ -32,12 +33,11 @@ class MyCmd(cmd.Cmd):
          "make_rec",
          "find_rec",
          "del_rec",
-         #  "del_comp_rec",
          "edit_ph_rec",
          "edit_tag_rec",
          "cong_rec",
          "exp_tag",
-         # "add_comp_rec",
+         "import",
          ])
     intro = tprint("designed  by  DRUJBA  team")
 
@@ -109,12 +109,10 @@ class MyCmd(cmd.Cmd):
                       "Edites tag to record in addressbook by name (use search before use)")
         table.add_row("cong_rec",
                       "Search contacts by birthday")
-        # table.add_row("exp_tag",
-        #               "Exports contacts by tag to a JSON file (use search before use)")
-        # table.add_row("add_comp_rec",
-        #               "Adds a company to a record in the address book by name (use search before use)")
-        # table.add_row("del_comp_rec",
-        #               "Deletes company in addressbook by name (use search before use)")
+        table.add_row("exp_tag",
+                      "Exports contacts by tag to a JSON file (use search before use)")
+        table.add_row("import",
+                      "Import file in contacts")
         table.add_row("----",
                       "-----------------------------------")
         table.add_row("sort_by_type",
@@ -128,87 +126,114 @@ class MyCmd(cmd.Cmd):
         "Make a note"
         title = input(command_message("Enter title>>> "))
         note = input(command_message("Enter note>>> "))
-        self.notes_book.add_note(title, note)
-        question = input(command_message("Do you want to enter a tag?>> "))
-        if question.lower() == 'yes':
-            tag = input(command_message("Enter tag>>> "))
-            self.notes_book.add_tag(tag)
-        self.notes_book.save_note()
-        print(positive_action("Note added"))
+        if title != "" and note != "":
+            self.notes_book.add_note(title, note)
+            question = input(command_message(
+                "Do you want to enter a tag? (yes/no)>>> "))
+            if question.lower() == 'yes':
+                tag = input(command_message("Enter tag>>> "))
+                self.notes_book.add_tag(tag)
+            self.notes_book.save_note()
+            print(positive_action("Note added"))
+        else:
+            print(error_message("The title and note must be entered"))
 
     def do_make_tag(self, *args):
         "Make a tag"
         inp_id = input(command_message(
             "Enter ID of the record that changes>>> "))
-        tag = input(command_message("Enter tag>>> "))
-        self.notes_book.add_tag(tag, inp_id)
-        self.notes_book.save_note()
-        print(positive_action("Tag added"))
+        if len(self.notes_book.find_note_id(inp_id)) >= 1:
+            tag = input(command_message("Enter tag>>> "))
+            if tag != "":
+                self.notes_book.add_tag(tag, inp_id)
+                self.notes_book.save_note()
+                print(positive_action("Tag added"))
+            else:
+                print(error_message("Tag is not correct"))
+        else:
+            print(error_message("Did not find ID"))
 
     def do_find_note(self, *args):
         "Search by title and notes"
         question = input(command_message("Enter your request>>> "))
-        table = Table()
-        table.add_column("ID", style="bright_magenta")
-        table.add_column("Date", style="magenta")
-        table.add_column("Tag", style="cyan")
-        table.add_column("Title", style="bright_cyan")
-        table.add_column("Note", style="blue")
-        if len(self.notes_book.find_note(question)) > 0:
-            for sh in self.notes_book.find_note(question):
-                if isinstance(sh.tag, list):
-                    table.add_row(
-                        f"{sh.note_id.get_id}", f"{sh.addition_date.get_date}",
-                        f"{' '.join([str(item) for item in sh.tag])}", f"{sh.title.get_title}", f"{sh.note.get_note}")
-            self.console.print(table)
-        else:
-            print(error_message("No notes found."))
+        if question != "":
+            table = Table()
+            table.add_column("ID", style="bright_magenta")
+            table.add_column("Date", style="magenta")
+            table.add_column("Tag", style="cyan")
+            table.add_column("Title", style="bright_cyan")
+            table.add_column("Note", style="blue")
+            if len(self.notes_book.find_note(question)) > 0:
+                for sh in self.notes_book.find_note(question):
+                    if isinstance(sh.tag, list):
+                        table.add_row(
+                            f"{sh.note_id.get_id}", f"{sh.addition_date.get_date}",
+                            f"{' '.join([str(item) for item in sh.tag])}", f"{sh.title.get_title}", f"{sh.note.get_note}")
+                self.console.print(table)
+            else:
+                print(error_message("No notes found."))
 
     def do_find_tag(self, *args):
         "Search by tags"
         question = input(command_message("Enter your request>>> "))
-        table = Table()
-        table.add_column("ID", style="bright_magenta", no_wrap=True)
-        table.add_column("Date", style="magenta")
-        table.add_column("Tag", style="cyan")
-        table.add_column("Title", style="bright_cyan")
-        table.add_column("Note", style="blue")
-        if len(self.notes_book.find_tag(question)) > 0:
-            for sh in self.notes_book.find_tag(question):
-                if isinstance(sh.tag, list):
-                    table.add_row(
-                        f"{sh.note_id.get_id}", f"{sh.addition_date.get_date}",
-                        f"{' '.join([str(item) for item in sh.tag])}", f"{sh.title.get_title}", f"{sh.note.get_note}")
+        if question != "":
+            table = Table()
+            table.add_column("ID", style="bright_magenta", no_wrap=True)
+            table.add_column("Date", style="magenta")
+            table.add_column("Tag", style="cyan")
+            table.add_column("Title", style="bright_cyan")
+            table.add_column("Note", style="blue")
+            if len(self.notes_book.find_tag(question)) > 0:
+                for sh in self.notes_book.find_tag(question):
+                    if isinstance(sh.tag, list):
+                        table.add_row(
+                            f"{sh.note_id.get_id}", f"{sh.addition_date.get_date}",
+                            f"{' '.join([str(item) for item in sh.tag])}", f"{sh.title.get_title}", f"{sh.note.get_note}")
 
-            self.console.print(table)
-        else:
-            print(error_message("No notes found."))
+                self.console.print(table)
+            else:
+                print(error_message("No notes found."))
 
     def do_edit_note(self, *args):
         "Edits notes"
         inp_id = input(command_message(
             "Enter ID of the record that changes>>> "))
-        note = input(command_message("Enter new note>>> "))
-        self.notes_book.edit_note(inp_id, note)
-        self.notes_book.save_note()
-        print(positive_action("Note has been edited"))
+        if len(self.notes_book.find_note_id(inp_id)) >= 1:
+            note = input(command_message("Enter new note>>> "))
+            if note != "":
+                self.notes_book.edit_note(inp_id, note)
+                self.notes_book.save_note()
+                print(positive_action("Note has been edited"))
+            else:
+                print(error_message("Note is empty"))
+        else:
+            print(error_message("Did not find ID"))
 
     def do_edit_title(self, *args):
         "Edits titles"
         inp_id = input(command_message(
             "Enter ID of the record that changes>>> "))
-        title = input(command_message("Enter new title>>> "))
-        self.notes_book.edit_title(inp_id, title)
-        self.notes_book.save_note()
-        print(positive_action("Title has been edited"))
+        if len(self.notes_book.find_note_id(inp_id)) >= 1:
+            title = input(command_message("Enter new title>>> "))
+            if title != "" and 3 < len(title) < 10:
+                self.notes_book.edit_title(inp_id, title)
+                self.notes_book.save_note()
+                print(positive_action("Title has been edited"))
+            else:
+                print(error_message("Title is not correct"))
+        else:
+            print(error_message("Did not find ID"))
 
     def do_del_note(self, *args):
         "Deletes note"
         inp_id = input(command_message(
             "Enter ID of the record that delete>>> "))
-        self.notes_book.delete_note(inp_id)
-        self.notes_book.save_note()
-        print(positive_action("Record deleted successfully"))
+        if len(self.notes_book.find_note_id(inp_id)) >= 1:
+            self.notes_book.delete_note(inp_id)
+            self.notes_book.save_note()
+            print(positive_action("Record deleted successfully"))
+        else:
+            print(error_message("Did not find ID"))
 
     def do_show_notes(self, *args):
         "Shows all notes records"
@@ -271,83 +296,165 @@ class MyCmd(cmd.Cmd):
     def do_find_rec(self, *args):
         "Search in addressbook"
         question = input(command_message("Enter your request>>> "))
-        table = Table()
-        table.add_column("ID", style="bright_magenta")
-        table.add_column("Tag", style="magenta")
-        table.add_column("Name", style="cyan")
-        table.add_column("Phone", style="bright_cyan")
-        table.add_column("Email", style="blue")
-        table.add_column("Address", style="magenta")
-        table.add_column("Birthday", style="cyan")
-        table.add_column("Company", style="bright_cyan")
-        table.add_column("Comment", style="blue")
-        if len(self.book.find(question)) > 0:
-            for sh in self.book.find(question):
-                table.add_row(f"{sh.id.get_id}",
-                              f"{' '.join([str(item) for item in sh.tags])}",
-                              f"{sh.name.get_name}",
-                              f"{' '.join([str(item) for item in sh.phones])}",
-                              f"{sh.email.get_email}",
-                              f"{sh.address.get_address}",
-                              f"{sh.birthday.get_birthday}",
-                              f"{sh.company.get_company}",
-                              f"{sh.comment.get_comment}",
-                              )
-            self.console.print(table)
-        else:
-            print(error_message("No record found."))
+        if question != "":
+            table = Table()
+            table.add_column("ID", style="bright_magenta")
+            table.add_column("Tag", style="magenta")
+            table.add_column("Name", style="cyan")
+            table.add_column("Phone", style="bright_cyan")
+            table.add_column("Email", style="blue")
+            table.add_column("Address", style="magenta")
+            table.add_column("Birthday", style="cyan")
+            table.add_column("Company", style="bright_cyan")
+            table.add_column("Comment", style="blue")
+            if len(self.book.find(question)) > 0:
+                for sh in self.book.find(question):
+                    table.add_row(f"{sh.id.get_id}",
+                                  f"{' '.join([str(item) for item in sh.tags])}",
+                                  f"{sh.name.get_name}",
+                                  f"{' '.join([str(item) for item in sh.phones])}",
+                                  f"{sh.email.get_email}",
+                                  f"{sh.address.get_address}",
+                                  f"{sh.birthday.get_birthday}",
+                                  f"{sh.company.get_company}",
+                                  f"{sh.comment.get_comment}",
+                                  )
+                self.console.print(table)
+            else:
+                print(error_message("No record found."))
 
     def do_del_rec(self, *args):
         "Deletes record in addressbook"
         question = input(command_message("Enter name to detete>>> "))
         print(self.book.remove_record(question))
 
+    # заміна номера телефона (не консольна)
+    def edit_phone(self, record_to_edit: Record):
+
+        if isinstance(record_to_edit, Record):
+            edit_old_ph = input(command_message(
+                "Enter the old phone number>>> "))
+            edit_new_ph = input(command_message(
+                "Enter the new phone number>>> "))
+            if edit_old_ph and edit_new_ph:
+                try:
+                    exiting_record_str = self.book.find_exiting_record(
+                        record_to_edit.name.get_name)
+                    if self.book.edit_phone(
+                            record_to_edit, exiting_record_str, edit_old_ph, edit_new_ph):
+                        print(positive_action("Phone edit successful"))
+                    else:
+                        print(error_message("Phone not found"))
+                except Exception as ve:
+                    print(error_message("No changes made to the phone number."))
+            else:
+                print(error_message("No changes made to the phone number."))
+
+    # заміна номера телефона (працює разом з <<<def edit_phone>>>)
     def do_edit_ph_rec(self, *args):
         "Edites phone to record in addressbook by name"
         question_name = input(command_message(
-            "Enter the name of the record to edit>>> "))
+            "Enter the name to edit phone>>> "))
         if question_name != "":
             record_to_edit = self.book.find_record(question_name)
-            if record_to_edit:
-                edit_old_ph = input(command_message(
-                    "Enter the old phone number>>> "))
-                edit_new_ph = input(command_message(
-                    "Enter the new phone number>>> "))
-                if edit_old_ph and edit_new_ph:
-                    try:
-                        exiting_record_str = self.book.find_exiting_record(
-                            record_to_edit.name.get_name)
-                        self.book.edit_phone(
-                            record_to_edit, exiting_record_str, edit_old_ph, edit_new_ph)
-                        print(positive_action("Phone edit successful"))
-                    except Exception as ve:
-                        print(error_message("No changes made to the phone number."))
-                else:
-                    print(error_message("No changes made to the phone number."))
-        else:
-            print(error_message(
-                f"No record found with the name: {question_name}"))
+            if isinstance(record_to_edit, Record):
 
+                self.edit_phone(record_to_edit)
+
+            elif isinstance(record_to_edit, list):
+
+                table = Table()
+                table.add_column("ID", style="bright_magenta")
+                table.add_column("Tag", style="magenta")
+                table.add_column("Name", style="cyan")
+                table.add_column("Phone", style="bright_cyan")
+                table.add_column("Email", style="blue")
+                table.add_column("Address", style="magenta")
+                table.add_column("Birthday", style="cyan")
+                table.add_column("Company", style="bright_cyan")
+                table.add_column("Comment", style="blue")
+
+                for sh in record_to_edit:
+                    table.add_row(f"{sh.id.get_id}",
+                                  f"{' '.join([str(item) for item in sh.tags])}",
+                                  f"{sh.name.get_name}",
+                                  f"{' '.join([str(item) for item in sh.phones])}",
+                                  f"{sh.email.get_email}",
+                                  f"{sh.address.get_address}",
+                                  f"{sh.birthday.get_birthday}",
+                                  f"{sh.company.get_company}",
+                                  f"{sh.comment.get_comment}",
+                                  )
+                self.console.print(table)
+
+                input_id = input(command_message(
+                    "Enter ID>>> "))
+
+                self.edit_phone(self.book.find_record_id(int(input_id)))
+            else:
+                print(error_message(
+                    f"No record found with the name: {question_name}"))
+
+    # заміна тегу телефона (не консольна)
+    def edit_tag(self, record_to_edit: Record):
+
+        if isinstance(record_to_edit, Record):
+            old_tag = input(command_message("Enter the old tag>>> "))
+            new_tag = input(command_message("Enter the new tag>>> "))
+            if old_tag and new_tag:
+                try:
+                    exiting_record_str = self.book.find_exiting_record(
+                        record_to_edit.name.get_name)
+                    if self.book.edit_teg(
+                            record_to_edit, exiting_record_str, old_tag, new_tag):
+                        print(positive_action("Tag edit successful"))
+                    else:
+                        print(error_message("Tag not found"))
+                except Exception as ve:
+                    print(error_message("No changes made to the tag"))
+            else:
+                print(error_message("No changes made to the tag"))
+
+    # зміна тегу (працює разом з <<<def edit_tag>>>)
     def do_edit_tag_rec(self, *args):
         "Edits tag to record in addressbook by name"
         question_name = input(command_message(
             "Enter the name of the record to edit>>> "))
         if question_name != "":
             record_to_edit = self.book.find_record(question_name)
-            if record_to_edit:
-                old_tag = input(command_message("Enter the old tag>>> "))
-                new_tag = input(command_message("Enter the new tag>>> "))
-                if new_tag:
-                    try:
-                        exiting_record_str = self.book.find_exiting_record(
-                            record_to_edit.name.get_name)
-                        self.book.edit_teg(
-                            record_to_edit, exiting_record_str, old_tag, new_tag)
-                        print(positive_action("Tag edit successful"))
-                    except Exception as ve:
-                        print(error_message("No changes made to the tag."))
-                else:
-                    print(error_message("No changes made to the tag."))
+            if isinstance(record_to_edit, Record):
+
+                self.edit_tag(record_to_edit)
+
+            elif isinstance(record_to_edit, list):
+
+                table = Table()
+                table.add_column("ID", style="bright_magenta")
+                table.add_column("Tag", style="magenta")
+                table.add_column("Name", style="cyan")
+                table.add_column("Phone", style="bright_cyan")
+                table.add_column("Email", style="blue")
+                table.add_column("Address", style="magenta")
+                table.add_column("Birthday", style="cyan")
+                table.add_column("Company", style="bright_cyan")
+                table.add_column("Comment", style="blue")
+
+                for sh in record_to_edit:
+                    table.add_row(f"{sh.id.get_id}",
+                                  f"{' '.join([str(item) for item in sh.tags])}",
+                                  f"{sh.name.get_name}",
+                                  f"{' '.join([str(item) for item in sh.phones])}",
+                                  f"{sh.email.get_email}",
+                                  f"{sh.address.get_address}",
+                                  f"{sh.birthday.get_birthday}",
+                                  f"{sh.company.get_company}",
+                                  f"{sh.comment.get_comment}",
+                                  )
+                self.console.print(table)
+
+                input_id = input(command_message(
+                    "Enter ID>>> "))
+                self.edit_tag(self.book.find_record_id(int(input_id)))
         else:
             print(error_message(
                 f"No record found with the name: {question_name}"))
@@ -384,14 +491,16 @@ class MyCmd(cmd.Cmd):
     def do_import(self, *args):
         "Import file in contacts"
         file = input(command_message("Enter filename>>> "))
-        self.book.import_files(file)
+        if file != "":
+            self.book.import_files(file)
+
     def do_exp_tag(self, *args):
         "Exports contacts by tag to a JSON file"
         tag_to_export = input(command_message(
             "Enter the tag to export contacts: "))
 
         if tag_to_export != "":
-                self.book.export_contacts_by_tag(tag_to_export)
+            self.book.export_contacts_by_tag(tag_to_export)
         else:
             print(error_message("Tag cannot be empty."))
     #     else:
