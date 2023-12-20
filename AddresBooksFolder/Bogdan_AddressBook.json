@@ -1,0 +1,46 @@
+[
+ {
+  "Name": "Bohdan",
+  "ID": 1,
+  "Phones": [
+   "0934432751",
+   "5555555555"
+  ],
+  "Birthday": null,
+  "Email": null,
+  "Comment": "tttt",
+  "Address": "Bucha",
+  "Company": "BUCH",
+  "Tags": []
+ },
+ {
+  "Name": "Bob",
+  "ID": 2,
+  "Phones": [
+   "9876543210"
+  ],
+  "Birthday": null,
+  "Email": "fffff@bbb.com",
+  "Comment": " ",
+  "Address": "SDFGH",
+  "Company": "FORDcorp",
+  "Tags": [
+   "WORK"
+  ]
+ },
+ {
+  "Name": "Bogdan",
+  "ID": 3,
+  "Phones": [
+   "0661266632"
+  ],
+  "Birthday": null,
+  "Email": null,
+  "Comment": null,
+  "Address": "Irpin",
+  "Company": null,
+  "Tags": [
+   "FRIEND"
+  ]
+ }
+]
