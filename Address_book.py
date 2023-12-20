@@ -5,6 +5,10 @@ from Style import positive_action, command_message, book_style, error_message
 from decorators import input_error
 import json
 import os
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 
 
 class AddressBook(UserList):
@@ -12,6 +16,7 @@ class AddressBook(UserList):
         self.data = []
         self.exiting_data = []
         self.json_file_name = file_name
+        self.user_info = None
         self.load_contacts()
 
     def set_id(self):
@@ -431,3 +436,66 @@ class AddressBook(UserList):
                     if int(days_to_happy) == (next_birthday - current_date).days:
                         happy_list.append(record)
         return happy_list
+
+    
+    def set_up_email(self):
+        email =  input(command_message('Enter Email:'))
+        password = input(command_message('Enter Password:'))
+        self.user_info.encrypt_email(password,email)
+        print(self.user_info._email)
+
+    def get_contacts_by_tags(self,search_tag):
+        
+        contacts = []
+        for item in self.data:
+            print([tag.get_tag for tag in item.tags])
+            if search_tag in [tag.get_tag for tag in item.tags]:
+                contacts.append(item)
+        return contacts
+
+    def send_message(self):
+        tag = input('Enter Tag:')
+        self.message_sender(self.get_contacts_by_tags(tag))
+
+    def message_sender(self,list_contacts: list[Record] ):
+        if self.user_info is not None:
+            email = self.user_info._email
+            password = self.user_info._email_password
+            if email != 'None' and password != 'None':
+
+                receiver_email = [item.email.get_email for item in list_contacts if item.email.get_email is not None] 
+                title = input(command_message('Enter Message Title'))
+                message_body = input(command_message('Enter Message'))
+
+
+                smtp_server = 'smtp.gmail.com'
+                port = 587 
+                
+                
+                
+                for r_email in receiver_email:
+                    
+                    message = MIMEMultipart()
+                    message['From'] = email
+                    
+                    message['To'] = r_email
+                    message['Subject'] = title
+                    
+                    message.attach(MIMEText(message_body, 'plain'))    
+
+                    with smtplib.SMTP(smtp_server, port) as server:
+                        server.starttls()
+                        server.login(email, password)
+                        text = message.as_string()
+                        
+                        server.sendmail(email, r_email, text)
+                        print('Лист успішно відправлено!')
+            else:
+                print("Для відправки повідомлень треба підключити гугл аккаунт")
+                
+                if input('Підключити? y/n') == 'y':
+                    email = input('Enter Email:')
+                    password = input('Enter Password')
+                    self.user_info.add_email(email,password)
+        else:
+            print('Для відправки повідомлень потрібно залогінитись')
