@@ -65,34 +65,37 @@ class AddressBook(UserList):
         self.save_contacts()
         return positive_action(f'{record.name.get_name} removed.')
 
-    def export_contacts_by_tag(self, tag: str):
-        filtered_records = [record for record in self.data if
-                            tag.lower() in [item.get_tag().lower() for item in record.tags]]
+    def export_contacts_by_tag(self, target_tag: str):
+        filtered_records = []
+        for cont in self.data:
+            for element in cont.tags:
+                if element == Tag(target_tag):
+                    filtered_records.append(cont)
 
         if filtered_records:
-            tag_file_name = f'Contacts_{tag.lower()}.json'
+            tag_file_name = f'Contacts_{target_tag.lower()}.json'
 
             tag_data = []
             for record in filtered_records:
-                serialize_record = {
-                    'Name': record.name.get_name(),
-                    'ID': record.id.get_id(),
-                    'Phones': [item.get_phone() for item in record.phones],
-                    'Birthday': record.birthday.get_birthday().strftime('%Y-%m-%d') if isinstance(
-                        record.birthday.get_birthday(), date) else None,
-                    'Email': record.email.get_email(),
-                    'Comment': record.comment.get_comment(),
-                    'Address': record.address.get_address(),
-                    'Company': record.company.get_company(),
-                    'Tags': [item.get_tag() for item in record.tags],
-                }
+                serialize_record = {'Name': record.name.get_name,
+                                    'ID': record.id.get_id,
+                                    'Phones': [item.get_phone for item in record.phones],
+                                    'Birthday': record.birthday.get_birthday.strftime('%Y-%m-%d') if isinstance(
+                                        record.birthday.get_birthday, date) else None,
+                                    'Email': record.email.get_email,
+                                    'Comment': record.comment.get_comment,
+                                    'Address': record.address.get_address,
+                                    'Company': record.company.get_company,
+                                    'Tags': [item.get_tag for item in record.tags],
+                                    }
                 tag_data.append(serialize_record)
 
             with open(tag_file_name, 'w') as tag_fh:
                 json.dump(tag_data, tag_fh, indent=1)
-                print(f'{tag_file_name} successfully exported!')
+                print("Success")
         else:
-            print(f'No contacts found for the tag: {tag}')
+            print("Noooooo")
+
 
     def import_files(self, file):
         script_directory = os.path.dirname(os.path.abspath(__file__))

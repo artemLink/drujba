@@ -26,6 +26,9 @@ class Tag(Field):
     def set_tag(self, tag: str):
             self._tag = tag
 
+    def __eq__(self, other):
+        return isinstance(other, Tag) and self._tag == other._tag
+
     def __str__(self):
         return f"{self.get_tag}"
 
