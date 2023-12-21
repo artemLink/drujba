@@ -102,7 +102,7 @@ class AddressBook(UserList):
         else:
             print("Noooooo")
 
-    @input_error
+    # @input_error
     def import_files(self, file):
         script_directory = os.path.dirname(os.path.abspath(__file__))
         source_filepath = os.path.join(script_directory, self.json_file_name)
@@ -110,14 +110,25 @@ class AddressBook(UserList):
 
         # Load source file
         with open(source_filepath, 'r') as source_file:
-            source_data = json.load(source_file)
+            source_content = source_file.read()
+            source_data = json.loads(source_content) if source_content.strip() else []
 
         # Load import file and check if exist
         if not os.path.exists(import_file_path):
             print('Такого файлу не існує')
             return
+
         with open(import_file_path, 'r') as import_file:
+            import_content = import_file.read()
+            if not import_content.strip():  # check is empty
+                print(f'Файл пустий')
+                return
+            import_file.seek(0)
             import_data = json.load(import_file)
+
+        numbers1 = set(str(phone) for obj in source_data for phone in obj.get("Phones") or [])
+        import_data = [obj for obj in import_data if
+                       not any(str(phone) in numbers1 for phone in obj.get("Phones") or [])]
 
         new_json = source_data + import_data
         count = 1
