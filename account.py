@@ -17,6 +17,7 @@ from Bot import MyCmd
 from Notes_book import NotesBook
 from Address_book import AddressBook
 from Style import positive_action,error_message
+import time
 
     
 class UserAccount():
@@ -137,17 +138,19 @@ class UserAccount():
         
         if user_acc == False or login != user_acc._user_name or password != user_acc._user_password._password:
             
-            print(error_message('Invalid Login or Password. Try Again'))
             
-            
+            console.rule(title=f"[red]Invalid Login or Password. Try Again![/red]", style="bright_magenta")
+
             return False
         else:
-            print(user_acc)
+            console.rule(title=f"[green]{user_acc._user_name}, Welcome Back![/green]", style="bright_magenta")
+            time.sleep(3)
             return user_acc
     
     def add_email(self, email,password):
         self._email = email
         self._email_password = password
+        
         self.encryptor(self._user_name,self._user_password._password)
 
 class UserPassword():
