@@ -1,6 +1,4 @@
 from cryptography.fernet import Fernet
-import getpass
-import msvcrt
 import cmd
 from rich.console import Console
 from rich.table import Table
@@ -16,6 +14,7 @@ from Style import positive_action,command_message
 from Bot import MyCmd
 from Notes_book import NotesBook
 from Address_book import AddressBook
+import imaplib
 
 import time
 
@@ -152,7 +151,7 @@ class UserAccount():
             return user_acc
 
 
-
+    
 
     def add_email(self, email,password):
         """
@@ -165,7 +164,20 @@ class UserAccount():
         self._email_password = password
         
         self.encryptor(self._user_name,self._user_password._password)
-
+    
+    def testLogin(self):
+        mail = imaplib.IMAP4_SSL('imap.gmail.com')
+        try:
+        
+            mail.login(self._email,self._email_password )
+            console.rule(title=f"[green]Login successful! The password and email are correct.[/green]", style="bright_magenta")
+            return True
+        except imaplib.IMAP4.error as e:
+            
+            console.rule(title=f"[red]Error logging into the account![/red]", style="bright_magenta")
+            return False
+        finally:
+            mail.logout()
 class UserPassword():
     def __init__(self,password=None) -> None:
         self._password=password
@@ -199,7 +211,7 @@ class LoginCMD(cmd.Cmd):
     word_completer = WordCompleter(['login','register',"exit"])
     intro = tprint("designed  by  DRUJBA  team")
     
-
+    
     
     def cmdloop(self, intro=None):
         self.preloop()
