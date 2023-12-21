@@ -386,10 +386,9 @@ class MyCmd(cmd.Cmd):
                 "Enter the new phone number>>> "))
             if edit_old_ph and edit_new_ph:
                 if exit_record is not None:
-                    print('1IF')
+                    
                     exiting_record_str = exit_record
-                    print(exiting_record_str['ID'])
-                    print(record_to_edit.id.get_id)
+                    
                     try:
                         if self.book.edit_phone(record_to_edit, exiting_record_str, edit_old_ph, edit_new_ph):
                             print(positive_action("Phone edit successful"))
@@ -398,7 +397,7 @@ class MyCmd(cmd.Cmd):
                     except Exception as ve:
                         print(error_message("No changes made to the phone number."))
                 else:
-                    print('2IF')
+                    
                     try:
                         exiting_record_str = self.book.find_exiting_record(
                             record_to_edit.name.get_name)
