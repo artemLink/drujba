@@ -56,7 +56,7 @@ class NotesBook(UserList):
 
     # завантаження з файлу
     def load_notes(self):
-        with open(self.json_file_name, 'r') as fh:
+        with open(self.json_file_name, 'a+') as fh:
             try:
                 self.exiting_data = json.load(fh)
             except json.JSONDecodeError:

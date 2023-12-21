@@ -110,14 +110,25 @@ class AddressBook(UserList):
 
         # Load source file
         with open(source_filepath, 'r') as source_file:
-            source_data = json.load(source_file)
+            source_content = source_file.read()
+            if not source_content.strip():  # check is empty
+                source_data = [{}]
+            else:
+                source_data = json.loads(source_content)
 
         # Load import file and check if exist
         if not os.path.exists(import_file_path):
             print('Такого файлу не існує')
             return
         with open(import_file_path, 'r') as import_file:
+            import_content = import_file.read()
+            if not import_content.strip():  # check is empty
+                print(f'Файл пустий')
+                return
             import_data = json.load(import_file)
+
+        numbers1 = set(str(obj.get("Phones")) for obj in source_data)
+        import_data = [obj for obj in import_data if str(obj.get("Phones")) not in numbers1]
 
         new_json = source_data + import_data
         count = 1
