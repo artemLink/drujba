@@ -140,7 +140,7 @@ class UserAccount():
         
 
         Returns:
-        якщо логування пройшло, поверне UserAccount.
+        якщо логування пройшло, поверне UserAccount.\n
         якщо логування не пройшло поверне False.
         """
         login = input('Input Login:')
@@ -157,8 +157,16 @@ class UserAccount():
             console.rule(title=f"[green]{user_acc._user_name}, Welcome Back![/green]", style="bright_magenta")
             time.sleep(3)
             return user_acc
-    login()
+    
     def add_email(self, email,password):
+        """
+        Функція add_email(Параметри: email: str, password: str )).
+        Приймає емейл та пароль для Підключення google акаунта до бота
+        Returns:
+        Немає повернення.
+        """
+        
+   
         self._email = email
         self._email_password = password
         
@@ -167,20 +175,25 @@ class UserAccount():
 class UserPassword():
     def __init__(self,password=None) -> None:
         self._password=password
-    
+        
     def pass_ok(self):
+        """Функція для перевірки корекстності вводу паролю використовується в функції register_account
+        
+        Returns:
+            _type_: _description_
+        
+        """
         password = input('Input Password:')
         repeat_password = input('Repeate The Password:')
         if password != repeat_password:
-            print('Passwords do not match. Please try again.')
+            console.rule(title=f"[red]Passwords do not match. Please try again.[/red]", style="bright_magenta")
             return self.pass_ok()
         elif password == repeat_password:
-            print('Password is ok')
             self._password = password
     def __str__(self) -> str:
         return f'{self._password}'
 
-
+    
 
 
 class LoginCMD(cmd.Cmd):
