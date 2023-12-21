@@ -51,6 +51,8 @@ class MyCmd(cmd.Cmd):
          "add_email_rec",
          "remove_email_rec",
          "edit_name_rec",
+         "authorize_gmail",
+         "send_email"
          ])
     intro = tprint("designed  by  DRUJBA  team")
 
@@ -538,51 +540,17 @@ class MyCmd(cmd.Cmd):
 
         self.book.import_files(file)
     
-    def do_info(self, *args):
-      #####################################  
-        print(self.user_info._email)
-    def do_set_up_email(self, *args):
-      #####################################  
-        self.book.set_up_email()
-    def do_sm(self, *args):
-        self.book.message_sender([self.book.data[0]])
-    def do_send(self, *args):
-        self.book.send_message()
-    def do_edit_email(self,*args):
-        email = input('Enter Email:')
-        password = input('Enter Password')
-        self.book.user_info.add_email(email,password)
-    # не працює
-    # def do_exp_tag(self, *args):
-    #     "Exports contacts by tag to a JSON file"
-    #     tag_to_export = input(command_message(
-    #         "Enter the tag to export contacts: "))
-
-    #     if tag_to_export != "":
-    #         try:
-    #             self.book.export_contacts_by_tag(tag_to_export)
-    #             print(positive_action(
-    #                 f'Contacts with tag "{tag_to_export}" exported successfully!'))
-    #         except Exception as e:
-    #             print(error_message(f'Error exporting contacts: {str(e)}'))
-
-        if file != "":
-            self.book.import_files(file)
-        self.book.import_files(file)
     
-    # def do_info(self, *args):
-    #     print(self.user_info._email)
-    def do_set_up_email(self, *args):
-     
+
+    # Підключає пошту для відправки повідомлень
+    def do_authorize_gmail(self, *args):   
         self.book.set_up_email()
-    def do_sm(self, *args):
-        self.book.message_sender([self.book.data[0]])
-    def do_send(self, *args):
+        self.book.user_info.testLogin()
+    
+    #Знаходить контакти за тегом та відправляє клієнтам
+    def do_send_email(self, *args):
         self.book.send_message()
-    def do_edit_email(self,*args):
-        email = input('Enter Email:')
-        password = input('Enter Password')
-        self.book.user_info.add_email(email,password)
+        
 
     def do_exp_tag(self, *args):
         "Exports contacts by tag to a JSON file"
