@@ -12,11 +12,11 @@ from random import choice
 from string import ascii_letters
 from FolderPath import FOLDER_ACCOUNTS_PATH,FOLDER_NOTESBOOKS_PATH,FOLDER_ADDRESSBOOKS_PATH
 import os
-from Style import positive_action
+from Style import positive_action,command_message
 from Bot import MyCmd
 from Notes_book import NotesBook
 from Address_book import AddressBook
-from Style import positive_action,error_message
+
 import time
 
     
@@ -24,7 +24,6 @@ class UserAccount():
     
     def __init__(self,user_name=None, user_email=None,user_password=None,):
         self._user_name = user_name
-        
         self._user_password = UserPassword(user_password)
         self._account = None
         self._addres_book = None
@@ -41,14 +40,14 @@ class UserAccount():
         names = []
         for txt_file in txt_files:
             names.append(txt_file.replace('_account.txt',''))
-        
-
-        
         self._user_password = UserPassword(None)
         login = input('Input Login:')
+        if login == '':
+            return
         if login in names:
-            print(error_message('This login is already taken'))
-            return 
+            
+            console.rule(title=f"[red]The username'{login}' is already taken.[/red]", style="bright_magenta")
+            return self.register_account()
         self._user_name = login
        
         self._account = os.path.join(FOLDER_ACCOUNTS_PATH,f'{self._user_name}_account.txt')
@@ -59,6 +58,7 @@ class UserAccount():
         self.create_notesbook()
 
         self.encryptor(self._user_name,self._user_password._password)
+        console.rule(title=f"[green]Account'{self._user_name}' successfully created.[/green]", style="bright_magenta")
         
     def encryptor(self,login,password):
         key = Fernet.generate_key() # encrypt Key Genaration
@@ -78,12 +78,14 @@ class UserAccount():
             file.write(encrypt_notes_book + b'\n')
             file.write(encript_email + b'\n')
             file.write(encript_email_password)
-    
+
+
     def descriptor(self,login,password): 
         path = os.path.join(FOLDER_ACCOUNTS_PATH,f'{login}_account.txt')  # Open Account Data
         if os.path.exists(path):   
             with open(path, 'r') as file:
                 data = file.readlines()
+            
             key = data[0].strip() # get cipheres Key
             ciphered_login = data[1].strip() # get cipheres Login
             ciphered_password = data[2].strip() # get cipheres pass
@@ -97,9 +99,6 @@ class UserAccount():
             self._user_password._password = ciphers.decrypt(ciphered_password).decode() # decryt Password
             self._addres_book = ciphers.decrypt(ciphered_adr_file).decode()
             self._Notes_book = ciphers.decrypt(ciphered_note_file).decode()
-            
-            
-            
             self._email = ciphers.decrypt(ciphered_email).decode() 
             self._email_password = ciphers.decrypt(ciphered_emailpassword).decode()
             
@@ -128,17 +127,14 @@ class UserAccount():
         filename = ''.join(choice(letters) for _ in range(20)) + '.json' 
         return filename
 
-        
 
-    
+
     def login(self): 
         """
         Функція login файл account.py
         Відповідає за процесс входу в обліковий запис
         Parameters:
         Немає параметрів.
-        
-
         Returns:
         якщо логування пройшло, поверне UserAccount.\n
         якщо логування не пройшло поверне False.
@@ -146,27 +142,25 @@ class UserAccount():
         login = input('Input Login:')
         password = input('Input Password:')
         user_acc = self.descriptor(login,password)
-        
-        if user_acc == False or login != user_acc._user_name or password != user_acc._user_password._password:
-            
-            
-            console.rule(title=f"[red]Invalid Login or Password. Try Again![/red]", style="bright_magenta")
 
+        if user_acc == False or login != user_acc._user_name or password != user_acc._user_password._password:
+            console.rule(title=f"[red]Invalid Login or Password. Try Again![/red]", style="bright_magenta")
             return False
         else:
             console.rule(title=f"[green]{user_acc._user_name}, Welcome Back![/green]", style="bright_magenta")
             time.sleep(3)
             return user_acc
-    
+
+
+
+
     def add_email(self, email,password):
         """
         Функція add_email(Параметри: email: str, password: str )).
         Приймає емейл та пароль для Підключення google акаунта до бота
         Returns:
         Немає повернення.
-        """
-        
-   
+        """   
         self._email = email
         self._email_password = password
         
