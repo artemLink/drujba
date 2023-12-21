@@ -166,7 +166,7 @@ class Phone(Field):
         elif bool(phone) is False:
             self._phone = None
         else:
-            raise ValueError('ValueError: Phone Number have 10 numbers ex: 0501952343')
+            raise ValueError('ValueError: Phone Number must have 10 numbers ex: 0501952343')
 
     def __str__(self):
         return f'{self.get_phone}'
@@ -193,16 +193,16 @@ class Birthday(Field):
             mounth = birthday_date[1]
             day = birthday_date[2]
             if not year.isdigit() or len(year) != 4:
-                raise ValueError('Рік складається тільки з цифр і має 4 символи.')
+                raise ValueError('The year consists only of numbers and has 4 characters.')
             if not mounth.isdigit() or len(mounth) > 2:
-                raise ValueError('Місяць складається тільки з цифр і містить 2 символи.')
+                raise ValueError('The month consists only of numbers and contains 2 symbols.')
             if int(mounth) > 12:
-                raise ValueError('Місяць може мати значення від 1 до 12.')
+                raise ValueError('The month can have values ​​from 1 to 12.')
             if not day.isdigit():
-                raise ValueError('день складається тільки з цифр.')
+                raise ValueError('The day consists only of numbers.')
             days_in_mounth = calendar.monthrange(int(year), int(mounth))[1]
             if int(day) > days_in_mounth:
-                raise ValueError(f'Некоректно введений день, вказаний місяць має тільки {days_in_mounth} днів.')
+                raise ValueError(f'Wrong day, the month has only {days_in_mounth} days.')
             self._birthday = datetime.date(int(year), int(mounth), int(day))
 
         elif birthday == None:
