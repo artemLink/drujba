@@ -156,6 +156,10 @@ class MyCmd(cmd.Cmd):
                       "-----------------------------------")
         table.add_row("sort_by_type",
                       "Sorts files by type (images, videos, documents, music, archives)")
+        table.add_row("authorize_gmail",
+                      "Authorizes a Google account")
+        table.add_row("send_email",
+                      "Sends messages to email by tags")
 
         self.console.print(table)
 
