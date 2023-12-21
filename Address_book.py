@@ -222,8 +222,8 @@ class AddressBook(UserList):
         for item in record.tags:
             if item.get_tag == old_tag:
                 item.set_tag = new_tag
-                break
-            elif old_tag is "":
+                break            
+            elif old_tag == "":
                 item.set_tag = new_tag
                 break
 
@@ -231,7 +231,7 @@ class AddressBook(UserList):
             if item == old_tag:
                 serialize_record['Tags'][index] = new_tag
                 return True
-            elif item is "":
+            elif item == "":
                 serialize_record['Tags'][index] = new_tag
                 return True
 
@@ -314,16 +314,17 @@ class AddressBook(UserList):
     def remove_email(self, record: Record, serialize_record):
         if not record.email.set_email:
             return error_message('Email is None!')
+        old_email = record.email.set_email
         record.email.set_email = None
         serialize_record['Email'] = None
         self.save_contacts()
-        return f'{positive_action("Email")} {book_style(record.email.get_email)} {positive_action("removed.")}'
+        return f'{positive_action("Email")} {book_style(old_email)} {positive_action("removed.")}'
 
     @input_error
     def rename(self, record: Record, serialize_record, name):
         old_name = str(record.name.get_name)
-        record.name.set_name = name
-        serialize_record['Name'] = name
+        record.name.set_name = name.capitalize()
+        serialize_record['Name'] = name.capitalize()
         self.save_contacts()
 
         return f'{book_style(old_name)} {positive_action("changed")} {book_style(record.name.get_name)}.'
