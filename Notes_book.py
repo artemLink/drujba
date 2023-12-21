@@ -60,7 +60,6 @@ class NotesBook(UserList):
             try:
                 self.exiting_data = json.load(fh)
             except json.JSONDecodeError:
-                print(json.JSONDecodeError)
                 return
             for item in self.exiting_data:
                 self.data.append(self.deserialize(item))

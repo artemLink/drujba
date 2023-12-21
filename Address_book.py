@@ -378,7 +378,6 @@ class AddressBook(UserList):
                 try:
                     self.exiting_data = json.load(fh)
                 except json.JSONDecodeError:
-                    print(json.JSONDecodeError)
                     return
                 for item in self.exiting_data:
                     self.data.append(self.deserialize(item))
@@ -465,7 +464,7 @@ class AddressBook(UserList):
         
         contacts = []
         for item in self.data:
-            print([tag.get_tag for tag in item.tags])
+            
             if search_tag in [tag.get_tag for tag in item.tags]:
                 contacts.append(item)
         return contacts

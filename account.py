@@ -209,7 +209,7 @@ class LoginCMD(cmd.Cmd):
     
     
     word_completer = WordCompleter(['login','register',"exit"])
-    intro = tprint("designed  by  DRUJBA  team")
+    #intro = tprint("designed  by  DRUJBA  team")
     
     
     
@@ -246,7 +246,7 @@ class LoginCMD(cmd.Cmd):
     
     def do_exit(self, *args):
         "Exit from bot"
-        print(positive_action("Good bye!"))
+        
         return True
         
 
