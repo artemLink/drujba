@@ -130,8 +130,19 @@ class UserAccount():
 
         
 
+    
+    def login(self): 
+        """
+        Функція login файл account.py
+        Відповідає за процесс входу в обліковий запис
+        Parameters:
+        Немає параметрів.
+        
 
-    def login(self): # Login Func
+        Returns:
+        якщо логування пройшло, поверне UserAccount.
+        якщо логування не пройшло поверне False.
+        """
         login = input('Input Login:')
         password = input('Input Password:')
         user_acc = self.descriptor(login,password)
@@ -146,7 +157,7 @@ class UserAccount():
             console.rule(title=f"[green]{user_acc._user_name}, Welcome Back![/green]", style="bright_magenta")
             time.sleep(3)
             return user_acc
-    
+    login()
     def add_email(self, email,password):
         self._email = email
         self._email_password = password
@@ -156,7 +167,7 @@ class UserAccount():
 class UserPassword():
     def __init__(self,password=None) -> None:
         self._password=password
-
+    
     def pass_ok(self):
         password = input('Input Password:')
         repeat_password = input('Repeate The Password:')
