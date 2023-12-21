@@ -1,6 +1,4 @@
 from cryptography.fernet import Fernet
-import getpass
-import msvcrt
 import cmd
 from rich.console import Console
 from rich.table import Table
@@ -12,18 +10,19 @@ from random import choice
 from string import ascii_letters
 from FolderPath import FOLDER_ACCOUNTS_PATH,FOLDER_NOTESBOOKS_PATH,FOLDER_ADDRESSBOOKS_PATH
 import os
-from Style import positive_action
+from Style import positive_action,command_message
 from Bot import MyCmd
 from Notes_book import NotesBook
 from Address_book import AddressBook
-from Style import positive_action,error_message
+import imaplib
+
+import time
 
     
 class UserAccount():
     
     def __init__(self,user_name=None, user_email=None,user_password=None,):
         self._user_name = user_name
-        
         self._user_password = UserPassword(user_password)
         self._account = None
         self._addres_book = None
@@ -40,14 +39,14 @@ class UserAccount():
         names = []
         for txt_file in txt_files:
             names.append(txt_file.replace('_account.txt',''))
-        
-
-        
         self._user_password = UserPassword(None)
         login = input('Input Login:')
+        if login == '':
+            return
         if login in names:
-            print(error_message('This login is already taken'))
-            return 
+            
+            console.rule(title=f"[red]The username'{login}' is already taken.[/red]", style="bright_magenta")
+            return self.register_account()
         self._user_name = login
        
         self._account = os.path.join(FOLDER_ACCOUNTS_PATH,f'{self._user_name}_account.txt')
@@ -58,6 +57,7 @@ class UserAccount():
         self.create_notesbook()
 
         self.encryptor(self._user_name,self._user_password._password)
+        console.rule(title=f"[green]Account'{self._user_name}' successfully created.[/green]", style="bright_magenta")
         
     def encryptor(self,login,password):
         key = Fernet.generate_key() # encrypt Key Genaration
@@ -77,12 +77,14 @@ class UserAccount():
             file.write(encrypt_notes_book + b'\n')
             file.write(encript_email + b'\n')
             file.write(encript_email_password)
-    
+
+
     def descriptor(self,login,password): 
         path = os.path.join(FOLDER_ACCOUNTS_PATH,f'{login}_account.txt')  # Open Account Data
         if os.path.exists(path):   
             with open(path, 'r') as file:
                 data = file.readlines()
+            
             key = data[0].strip() # get cipheres Key
             ciphered_login = data[1].strip() # get cipheres Login
             ciphered_password = data[2].strip() # get cipheres pass
@@ -96,9 +98,6 @@ class UserAccount():
             self._user_password._password = ciphers.decrypt(ciphered_password).decode() # decryt Password
             self._addres_book = ciphers.decrypt(ciphered_adr_file).decode()
             self._Notes_book = ciphers.decrypt(ciphered_note_file).decode()
-            
-            
-            
             self._email = ciphers.decrypt(ciphered_email).decode() 
             self._email_password = ciphers.decrypt(ciphered_emailpassword).decode()
             
@@ -127,46 +126,80 @@ class UserAccount():
         filename = ''.join(choice(letters) for _ in range(20)) + '.json' 
         return filename
 
-        
 
 
-    def login(self): # Login Func
+    def login(self): 
+        """
+        Функція login файл account.py
+        Відповідає за процесс входу в обліковий запис
+        Parameters:
+        Немає параметрів.
+        Returns:
+        якщо логування пройшло, поверне UserAccount.\n
+        якщо логування не пройшло поверне False.
+        """
         login = input('Input Login:')
         password = input('Input Password:')
         user_acc = self.descriptor(login,password)
-        
+
         if user_acc == False or login != user_acc._user_name or password != user_acc._user_password._password:
-            
-            print(error_message('Invalid Login or Password. Try Again'))
-            
-            
+            console.rule(title=f"[red]Invalid Login or Password. Try Again![/red]", style="bright_magenta")
             return False
         else:
-            print(user_acc)
+            console.rule(title=f"[green]{user_acc._user_name}, Welcome Back![/green]", style="bright_magenta")
+            time.sleep(3)
             return user_acc
+
+
     
+
     def add_email(self, email,password):
+        """
+        Функція add_email(Параметри: email: str, password: str )).
+        Приймає емейл та пароль для Підключення google акаунта до бота
+        Returns:
+        Немає повернення.
+        """   
         self._email = email
         self._email_password = password
+        
         self.encryptor(self._user_name,self._user_password._password)
-
+    
+    def testLogin(self):
+        mail = imaplib.IMAP4_SSL('imap.gmail.com')
+        try:
+        
+            mail.login(self._email,self._email_password )
+            console.rule(title=f"[green]Login successful! The password and email are correct.[/green]", style="bright_magenta")
+            return True
+        except imaplib.IMAP4.error as e:
+            
+            console.rule(title=f"[red]Error logging into the account![/red]", style="bright_magenta")
+            return False
+        finally:
+            mail.logout()
 class UserPassword():
     def __init__(self,password=None) -> None:
         self._password=password
-
+        
     def pass_ok(self):
+        """Функція для перевірки корекстності вводу паролю використовується в функції register_account
+        
+        Returns:
+            _type_: _description_
+        
+        """
         password = input('Input Password:')
         repeat_password = input('Repeate The Password:')
         if password != repeat_password:
-            print('Passwords do not match. Please try again.')
+            console.rule(title=f"[red]Passwords do not match. Please try again.[/red]", style="bright_magenta")
             return self.pass_ok()
         elif password == repeat_password:
-            print('Password is ok')
             self._password = password
     def __str__(self) -> str:
         return f'{self._password}'
 
-
+    
 
 
 class LoginCMD(cmd.Cmd):
@@ -178,7 +211,7 @@ class LoginCMD(cmd.Cmd):
     word_completer = WordCompleter(['login','register',"exit"])
     intro = tprint("designed  by  DRUJBA  team")
     
-
+    
     
     def cmdloop(self, intro=None):
         self.preloop()
