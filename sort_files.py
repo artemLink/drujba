@@ -78,5 +78,3 @@ def sort_by_type(path):
     print("List of files with unknown extensions:", os.listdir(unknown_dir))
 
 
-# Get the path from the user
-sort_by_type(input('Enter the path to the folder: '))
