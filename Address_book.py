@@ -454,8 +454,11 @@ class AddressBook(UserList):
     def set_up_email(self):
         email =  input(command_message('Enter Email:'))
         password = input(command_message('Enter Password:'))
-        self.user_info.encrypt_email(password,email)
-        print(self.user_info._email)
+        self.user_info._email = email
+        self.user_info._email_password = password
+        self.user_info.encryptor(self.user_info._user_name,self.user_info._user_password._password)
+        
+        #console.rule(title=f"[green]Autho[/green]", style="bright_magenta")
 
     def get_contacts_by_tags(self,search_tag):
         
@@ -471,44 +474,45 @@ class AddressBook(UserList):
         self.message_sender(self.get_contacts_by_tags(tag))
 
     def message_sender(self,list_contacts: list[Record] ):
-        if self.user_info is not None:
-            email = self.user_info._email
-            password = self.user_info._email_password
-            if email != 'None' and password != 'None':
+        if self.user_info.testLogin():
+            if self.user_info is not None:
+                email = self.user_info._email
+                password = self.user_info._email_password
+                if email != 'None' and password != 'None':
 
-                receiver_email = [item.email.get_email for item in list_contacts if item.email.get_email is not None] 
-                title = input(command_message('Enter Message Title'))
-                message_body = input(command_message('Enter Message'))
+                    receiver_email = [item.email.get_email for item in list_contacts if item.email.get_email is not None] 
+                    title = input(command_message('Enter Message Title'))
+                    message_body = input(command_message('Enter Message'))
 
 
-                smtp_server = 'smtp.gmail.com'
-                port = 587 
-                
-                
-                
-                for r_email in receiver_email:
+                    smtp_server = 'smtp.gmail.com'
+                    port = 587 
                     
-                    message = MIMEMultipart()
-                    message['From'] = email
                     
-                    message['To'] = r_email
-                    message['Subject'] = title
                     
-                    message.attach(MIMEText(message_body, 'plain'))    
-
-                    with smtplib.SMTP(smtp_server, port) as server:
-                        server.starttls()
-                        server.login(email, password)
-                        text = message.as_string()
+                    for r_email in receiver_email:
                         
-                        server.sendmail(email, r_email, text)
-                        print('Лист успішно відправлено!')
+                        message = MIMEMultipart()
+                        message['From'] = email
+                        
+                        message['To'] = r_email
+                        message['Subject'] = title
+                        
+                        message.attach(MIMEText(message_body, 'plain'))    
+
+                        with smtplib.SMTP(smtp_server, port) as server:
+                            server.starttls()
+                            server.login(email, password)
+                            text = message.as_string()
+                            
+                            server.sendmail(email, r_email, text)
+                            print('Лист успішно відправлено!')
+                else:
+                    print("Для відправки повідомлень треба підключити гугл аккаунт")
+                    
+                    if input('Підключити? y/n') == 'y':
+                        email = input('Enter Email:')
+                        password = input('Enter Password')
+                        self.user_info.add_email(email,password)
             else:
-                print("Для відправки повідомлень треба підключити гугл аккаунт")
-                
-                if input('Підключити? y/n') == 'y':
-                    email = input('Enter Email:')
-                    password = input('Enter Password')
-                    self.user_info.add_email(email,password)
-        else:
-            print('Для відправки повідомлень потрібно залогінитись')
+                print('Для відправки повідомлень потрібно залогінитись')
