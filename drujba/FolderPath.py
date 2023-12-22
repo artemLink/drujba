@@ -30,9 +30,9 @@ def create_base_json_files():
     # if not os.makedirs(NOTES):
     #     os.makedirs(NOTES)
 
-def create_base_json_files():
-    if not os.path.exists(CONTACTS):
-        os.makedirs(CONTACTS)
-    if not os.makedirs(NOTES):
-        os.makedirs(NOTES)
+# def create_base_json_files():
+#     if not os.path.exists(CONTACTS):
+#         os.makedirs(CONTACTS)
+#     if not os.makedirs(NOTES):
+#         os.makedirs(NOTES)
 
