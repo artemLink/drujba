@@ -38,3 +38,4 @@ def create_base_json_files():
 #         os.makedirs(CONTACTS)
 #     if not os.makedirs(NOTES):
 #         os.makedirs(NOTES)
+
