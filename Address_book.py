@@ -10,7 +10,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 
-
 class AddressBook(UserList):
     def __init__(self, file_name):
         self.data = []
@@ -111,7 +110,8 @@ class AddressBook(UserList):
         # Load source file
         with open(source_filepath, 'r') as source_file:
             source_content = source_file.read()
-            source_data = json.loads(source_content) if source_content.strip() else []
+            source_data = json.loads(
+                source_content) if source_content.strip() else []
 
         # Load import file and check if exist
         if not os.path.exists(import_file_path):
@@ -126,7 +126,8 @@ class AddressBook(UserList):
             import_file.seek(0)
             import_data = json.load(import_file)
 
-        numbers1 = set(str(phone) for obj in source_data for phone in obj.get("Phones") or [])
+        numbers1 = set(str(phone)
+                       for obj in source_data for phone in obj.get("Phones") or [])
         import_data = [obj for obj in import_data if
                        not any(str(phone) in numbers1 for phone in obj.get("Phones") or [])]
 
@@ -156,12 +157,13 @@ class AddressBook(UserList):
                             'Tags': [item.get_tag for item in record.tags],
                             }
         self.exiting_data.append(serialize_record)
-    def find_exititng_record_id(self,id):
-        #print(f'Type {type(id)} Value {id}')
+
+    def find_exititng_record_id(self, id):
+        # print(f'Type {type(id)} Value {id}')
         for item in self.exiting_data:
             if item['ID'] == id:
                 return item
-            
+
     @input_error
     def deserialize(self, dict) -> Record:
         record = Record(dict['Name'], dict['ID'])
@@ -238,7 +240,7 @@ class AddressBook(UserList):
         for item in record.tags:
             if item.get_tag == old_tag:
                 item.set_tag = new_tag
-                break            
+                break
             elif old_tag == "":
                 item.set_tag = new_tag
                 break
@@ -246,12 +248,12 @@ class AddressBook(UserList):
         for index, item in enumerate(serialize_record['Tags']):
             if item == old_tag:
                 serialize_record['Tags'][index] = new_tag
+                self.save_contacts()
                 return True
             elif item == "":
                 serialize_record['Tags'][index] = new_tag
+                self.save_contacts()
                 return True
-
-        self.save_contacts()
 
     @input_error
     def remove_teg(self, record: Record, serialize_record, tag):
@@ -276,7 +278,7 @@ class AddressBook(UserList):
         return f'{positive_action(f"Phone:")} {book_style(f"{phone}")} {positive_action("added.")}'
 
     def edit_phone(self, record: Record, serialize_record: {}, old_phone: str, new_phone: str) -> Record:
-        
+
         print()
         for item in record.phones:
             if item.get_phone == old_phone:
@@ -284,11 +286,10 @@ class AddressBook(UserList):
                 break
         for index, item in enumerate(serialize_record['Phones']):
             if item == old_phone:
-                
+
                 serialize_record['Phones'][index] = new_phone
-                self.save_contacts()                
+                self.save_contacts()
                 return True
-        
 
     @input_error
     def remove_phone(self, record: Record, serialize_record, phone):
@@ -469,21 +470,21 @@ class AddressBook(UserList):
                         happy_list.append(record)
         return happy_list
 
-    
     def set_up_email(self):
-        email =  input(command_message('Enter Email:'))
+        email = input(command_message('Enter Email:'))
         password = input(command_message('Enter Password:'))
         self.user_info._email = email
         self.user_info._email_password = password
-        self.user_info.encryptor(self.user_info._user_name,self.user_info._user_password._password)
-        
-        #console.rule(title=f"[green]Autho[/green]", style="bright_magenta")
+        self.user_info.encryptor(
+            self.user_info._user_name, self.user_info._user_password._password)
 
-    def get_contacts_by_tags(self,search_tag):
-        
+        # console.rule(title=f"[green]Autho[/green]", style="bright_magenta")
+
+    def get_contacts_by_tags(self, search_tag):
+
         contacts = []
         for item in self.data:
-            
+
             if search_tag in [tag.get_tag for tag in item.tags]:
                 contacts.append(item)
         return contacts
@@ -492,46 +493,44 @@ class AddressBook(UserList):
         tag = input('Enter Tag:')
         self.message_sender(self.get_contacts_by_tags(tag))
 
-    def message_sender(self,list_contacts: list[Record] ):
+    def message_sender(self, list_contacts: list[Record]):
         if self.user_info.testLogin():
             if self.user_info is not None:
                 email = self.user_info._email
                 password = self.user_info._email_password
                 if email != 'None' and password != 'None':
 
-                    receiver_email = [item.email.get_email for item in list_contacts if item.email.get_email is not None] 
+                    receiver_email = [
+                        item.email.get_email for item in list_contacts if item.email.get_email is not None]
                     title = input(command_message('Enter Message Title'))
                     message_body = input(command_message('Enter Message'))
 
-
                     smtp_server = 'smtp.gmail.com'
-                    port = 587 
-                    
-                    
-                    
+                    port = 587
+
                     for r_email in receiver_email:
-                        
+
                         message = MIMEMultipart()
                         message['From'] = email
-                        
+
                         message['To'] = r_email
                         message['Subject'] = title
-                        
-                        message.attach(MIMEText(message_body, 'plain'))    
+
+                        message.attach(MIMEText(message_body, 'plain'))
 
                         with smtplib.SMTP(smtp_server, port) as server:
                             server.starttls()
                             server.login(email, password)
                             text = message.as_string()
-                            
+
                             server.sendmail(email, r_email, text)
                             print('Лист успішно відправлено!')
                 else:
                     print("Для відправки повідомлень треба підключити гугл аккаунт")
-                    
+
                     if input('Підключити? y/n') == 'y':
                         email = input('Enter Email:')
                         password = input('Enter Password')
-                        self.user_info.add_email(email,password)
+                        self.user_info.add_email(email, password)
             else:
                 print('Для відправки повідомлень потрібно залогінитись')
