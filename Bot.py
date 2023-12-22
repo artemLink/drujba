@@ -168,7 +168,7 @@ class MyCmd(cmd.Cmd):
         "Make a note"
         title = input(command_message("Enter title>>> "))
         note = input(command_message("Enter note>>> "))
-        if title != "" and note != "" and 3 <= len(title) >= 10:
+        if title != "" and note != "" and 3 <= len(title) <= 10:
             self.notes_book.add_note(title, note)
             question = input(command_message(
                 "Do you want to enter a tag? (yes/no)>>> "))
