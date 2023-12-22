@@ -34,8 +34,9 @@ class UserAccount():
         return f'UserName = {self._user_name} UserPassword = {self._user_password._password} \n addresbook = {self._addres_book} \n notesbook = {self._Notes_book} \n Email = {self._email} \n Epasword = {self._email_password} '
 
     def register_account(self):  # Register Func
-
-        txt_files = [file for file in os.listdir(FOLDER_ACCOUNTS_PATH) if file.endswith(".txt")]
+        console = Console()
+        txt_files = [file for file in os.listdir(
+            FOLDER_ACCOUNTS_PATH) if file.endswith(".txt")]
         names = []
         for txt_file in txt_files:
             names.append(txt_file.replace('_account.txt', ''))
@@ -44,19 +45,24 @@ class UserAccount():
         if login == '':
             return
         if login in names:
-            console.rule(title=f"[red]The username'{login}' is already taken.[/red]", style="bright_magenta")
+            console.rule(
+                title=f"[red]The username'{login}' is already taken.[/red]", style="bright_magenta")
             return self.register_account()
         self._user_name = login
 
-        self._account = os.path.join(FOLDER_ACCOUNTS_PATH, f'{self._user_name}_account.txt')
+        self._account = os.path.join(
+            FOLDER_ACCOUNTS_PATH, f'{self._user_name}_account.txt')
         self._user_password.pass_ok()
-        self._addres_book = os.path.join(FOLDER_ADDRESSBOOKS_PATH, f'{self._user_name}_AddressBook.json')
-        self._Notes_book = os.path.join(FOLDER_NOTESBOOKS_PATH, f'{self._user_name}_NotesBook.json')
+        self._addres_book = os.path.join(
+            FOLDER_ADDRESSBOOKS_PATH, f'{self._user_name}_AddressBook.json')
+        self._Notes_book = os.path.join(
+            FOLDER_NOTESBOOKS_PATH, f'{self._user_name}_NotesBook.json')
         self.create_AdressBook()
         self.create_notesbook()
 
         self.encryptor(self._user_name, self._user_password._password)
-        console.rule(title=f"[green]Account'{self._user_name}' successfully created.[/green]", style="bright_magenta")
+        console.rule(
+            title=f"[green]Account'{self._user_name}' successfully created.[/green]", style="bright_magenta")
 
     def encryptor(self, login, password):
         key = Fernet.generate_key()  # encrypt Key Genaration
@@ -78,7 +84,8 @@ class UserAccount():
             file.write(encript_email_password)
 
     def descriptor(self, login, password):
-        path = os.path.join(FOLDER_ACCOUNTS_PATH, f'{login}_account.txt')  # Open Account Data
+        path = os.path.join(FOLDER_ACCOUNTS_PATH,
+                            f'{login}_account.txt')  # Open Account Data
         if os.path.exists(path):
             with open(path, 'r') as file:
                 data = file.readlines()
@@ -92,12 +99,15 @@ class UserAccount():
             ciphered_emailpassword = data[6].strip()
 
             ciphers = Fernet(key)
-            self._user_name = ciphers.decrypt(ciphered_login).decode()  # decrypt login
-            self._user_password._password = ciphers.decrypt(ciphered_password).decode()  # decryt Password
+            self._user_name = ciphers.decrypt(
+                ciphered_login).decode()  # decrypt login
+            self._user_password._password = ciphers.decrypt(
+                ciphered_password).decode()  # decryt Password
             self._addres_book = ciphers.decrypt(ciphered_adr_file).decode()
             self._Notes_book = ciphers.decrypt(ciphered_note_file).decode()
             self._email = ciphers.decrypt(ciphered_email).decode()
-            self._email_password = ciphers.decrypt(ciphered_emailpassword).decode()
+            self._email_password = ciphers.decrypt(
+                ciphered_emailpassword).decode()
 
             return self
         else:
@@ -127,15 +137,18 @@ class UserAccount():
         якщо логування пройшло, поверне UserAccount.\n
         якщо логування не пройшло поверне False.
         """
+        console = Console()
         login = input('Input Login:')
         password = input('Input Password:')
         user_acc = self.descriptor(login, password)
 
         if user_acc == False or login != user_acc._user_name or password != user_acc._user_password._password:
-            console.rule(title=f"[red]Invalid Login or Password. Try Again![/red]", style="bright_magenta")
+            console.rule(
+                title=f"[red]Invalid Login or Password. Try Again![/red]", style="bright_magenta")
             return False
         else:
-            console.rule(title=f"[green]{user_acc._user_name}, Welcome Back![/green]", style="bright_magenta")
+            console.rule(
+                title=f"[green]{user_acc._user_name}, Welcome Back![/green]", style="bright_magenta")
             time.sleep(3)
             return user_acc
 
@@ -153,6 +166,7 @@ class UserAccount():
 
     def testLogin(self):
         mail = imaplib.IMAP4_SSL('imap.gmail.com')
+        console = Console()
         try:
 
             mail.login(self._email, self._email_password)
@@ -161,7 +175,8 @@ class UserAccount():
             return True
         except imaplib.IMAP4.error as e:
 
-            console.rule(title=f"[red]Error logging into the account![/red]", style="bright_magenta")
+            console.rule(
+                title=f"[red]Error logging into the account![/red]", style="bright_magenta")
             return False
         finally:
             mail.logout()
@@ -173,15 +188,17 @@ class UserPassword():
 
     def pass_ok(self):
         """Функція для перевірки корекстності вводу паролю використовується в функції register_account
-        
+
         Returns:
             _type_: _description_
-        
+
         """
+        console = Console()
         password = input('Input Password:')
         repeat_password = input('Repeate The Password:')
         if password != repeat_password:
-            console.rule(title=f"[red]Passwords do not match. Please try again.[/red]", style="bright_magenta")
+            console.rule(
+                title=f"[red]Passwords do not match. Please try again.[/red]", style="bright_magenta")
             return self.pass_ok()
         elif password == repeat_password:
             self._password = password
@@ -253,4 +270,3 @@ def start():
 
 if __name__ == '__main__':
     start()
-
