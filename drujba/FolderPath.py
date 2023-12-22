@@ -17,7 +17,6 @@ def create_folders():
         os.makedirs(FOLDER_ADDRESSBOOKS_PATH)
     if not os.path.exists(FOLDER_NOTESBOOKS_PATH):
         os.makedirs(FOLDER_NOTESBOOKS_PATH)
-<<<<<<< Updated upstream
 CONTACTS = os.path.join(current_directory,'Contacts.json')
 NOTES = os.path.join(current_directory,'Notes.json')
 
