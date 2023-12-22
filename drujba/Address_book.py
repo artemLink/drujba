@@ -1,8 +1,8 @@
-from Record import Record, Phone, Tag
+from drujba.Record import Record, Phone, Tag
 from collections import UserList
 from datetime import datetime, date
-from Style import positive_action, command_message, book_style, error_message
-from decorators import input_error
+from drujba.Style import positive_action, command_message, book_style, error_message
+from drujba.decorators import input_error
 import json
 import os
 import smtplib
