@@ -12,7 +12,6 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
 
 
-
 class MyCmd(cmd.Cmd):
     book = AddressBook('Contacts.json')
     notes_book = NotesBook('Notes.json')
@@ -169,7 +168,7 @@ class MyCmd(cmd.Cmd):
         "Make a note"
         title = input(command_message("Enter title>>> "))
         note = input(command_message("Enter note>>> "))
-        if title != "" and note != "":
+        if title != "" and note != "" and 3 <= len(title) >= 10:
             self.notes_book.add_note(title, note)
             question = input(command_message(
                 "Do you want to enter a tag? (yes/no)>>> "))
@@ -339,7 +338,6 @@ class MyCmd(cmd.Cmd):
         "Make a record to addressbook"
         input_name = input("Enter name>>> ")
         print(self.book.add_full_record(input_name))
-    
 
     def do_find_rec(self, *args):
         "Search in addressbook"
@@ -386,9 +384,9 @@ class MyCmd(cmd.Cmd):
                 "Enter the new phone number>>> "))
             if edit_old_ph and edit_new_ph:
                 if exit_record is not None:
-                    
+
                     exiting_record_str = exit_record
-                    
+
                     try:
                         if self.book.edit_phone(record_to_edit, exiting_record_str, edit_old_ph, edit_new_ph):
                             print(positive_action("Phone edit successful"))
@@ -397,7 +395,7 @@ class MyCmd(cmd.Cmd):
                     except Exception as ve:
                         print(error_message("No changes made to the phone number."))
                 else:
-                    
+
                     try:
                         exiting_record_str = self.book.find_exiting_record(
                             record_to_edit.name.get_name)
@@ -412,11 +410,11 @@ class MyCmd(cmd.Cmd):
                 print(error_message("No changes made to the phone number."))
 
     # заміна номера телефона (працює разом з <<<def edit_phone>>>)
-    def do_edit_ph_rec(self,*args):
+    def do_edit_ph_rec(self, *args):
         "Edites phone to record in addressbook by name"
-        
+
         question_name = input(command_message(
-            "Enter the name to edit phone>>> ")) 
+            "Enter the name to edit phone>>> "))
         if question_name != "":
             record_to_edit = self.book.find_record(question_name)
             if isinstance(record_to_edit, Record):
@@ -452,37 +450,55 @@ class MyCmd(cmd.Cmd):
                 input_id = input(command_message(
                     "Enter ID>>> "))
                 if input_id != "":
-                    
-                    self.edit_phone(self.book.find_record_id(int(input_id)),self.book.find_exititng_record_id(int(input_id)))
+
+                    self.edit_phone(self.book.find_record_id(
+                        int(input_id)), self.book.find_exititng_record_id(int(input_id)))
             else:
                 print(error_message(
                     f"No record found with the name: {question_name}"))
 
-    # заміна тегу телефона (не консольна)
-    def edit_tag(self, record_to_edit: Record):
+    #############################################################
+
+    ###################### заміна тегу телефона #################
+    # не консольна
+    def edit_tag(self, record_to_edit: Record, exit_record=None):
 
         if isinstance(record_to_edit, Record):
-            old_tag = input(command_message("Enter the old tag>>> "))
-            new_tag = input(command_message("Enter the new tag>>> "))
-            if old_tag and new_tag:
-                try:
-                    exiting_record_str = self.book.find_exiting_record(
-                        record_to_edit.name.get_name)
-                    if self.book.edit_teg(
-                            record_to_edit, exiting_record_str, old_tag, new_tag):
-                        print(positive_action("Tag edit successful"))
-                    else:
-                        print(error_message("Tag not found"))
-                except Exception as ve:
-                    print(error_message("No changes made to the tag"))
+            edit_old_ph = input(command_message("Enter the old tag>>> "))
+            edit_new_ph = input(command_message("Enter the new tag>>> "))
+            if edit_old_ph and edit_new_ph:
+                if exit_record is not None:
+
+                    exiting_record_str = exit_record
+
+                    try:
+                        if self.book.edit_teg(record_to_edit, exiting_record_str, edit_old_ph, edit_new_ph):
+                            print(positive_action("Tag edit successful"))
+                        else:
+                            print(error_message("Tag not found"))
+                    except Exception as ve:
+                        print(error_message("No changes made to tag"))
+                else:
+
+                    try:
+                        exiting_record_str = self.book.find_exiting_record(
+                            record_to_edit.name.get_name)
+                        if self.book.edit_teg(
+                                record_to_edit, exiting_record_str, edit_old_ph, edit_new_ph):
+                            print(positive_action("Tag edit successful"))
+                        else:
+                            print(error_message("Tag not found"))
+                    except Exception as ve:
+                        print(error_message("No changes made to the tag"))
             else:
                 print(error_message("No changes made to the tag"))
 
     # зміна тегу (працює разом з <<<def edit_tag>>>)
     def do_edit_tag_rec(self, *args):
-        "Edits tag to record in addressbook by name"
+        "Edites phone to record in addressbook by name"
+
         question_name = input(command_message(
-            "Enter the name of the record to edit>>> "))
+            "Enter the name to edit phone>>> "))
         if question_name != "":
             record_to_edit = self.book.find_record(question_name)
             if isinstance(record_to_edit, Record):
@@ -518,10 +534,14 @@ class MyCmd(cmd.Cmd):
                 input_id = input(command_message(
                     "Enter ID>>> "))
                 if input_id != "":
-                    self.edit_tag(self.book.find_record_id(int(input_id)))
+
+                    self.edit_tag(self.book.find_record_id(
+                        int(input_id)), self.book.find_exititng_record_id(int(input_id)))
             else:
                 print(error_message(
                     f"No record found with the name: {question_name}"))
+
+    #######################################################################
 
     def do_cong_rec(self, *args):
         "Search contacts by birthday"
@@ -558,18 +578,16 @@ class MyCmd(cmd.Cmd):
         file = input(command_message("Enter filename>>> "))
 
         self.book.import_files(file)
-    
-    
 
     # Підключає пошту для відправки повідомлень
-    def do_authorize_gmail(self, *args):   
+
+    def do_authorize_gmail(self, *args):
         self.book.set_up_email()
         self.book.user_info.testLogin()
-    
-    #Знаходить контакти за тегом та відправляє клієнтам
+
+    # Знаходить контакти за тегом та відправляє клієнтам
     def do_send_email(self, *args):
         self.book.send_message()
-        
 
     def do_exp_tag(self, *args):
         "Exports contacts by tag to a JSON file"
@@ -778,25 +796,42 @@ class MyCmd(cmd.Cmd):
 
     ############## внесення тегу ##########################
     # не консольна
-    def add_tag(self, record_to_edit: Record):
-        if isinstance(record_to_edit, Record):
-            in_data = input(command_message("Enter the tag>>> "))
-            if in_data != "":
-                try:
-                    exiting_record_str = self.book.find_exiting_record(
-                        record_to_edit.name.get_name)
-                    print(self.book.add_teg(
-                        record_to_edit, exiting_record_str, in_data))
-                except Exception as ve:
-                    print(error_message("No changes made to the tag"))
-            else:
-                print(error_message("No added the tag"))
+    def add_tag(self, record_to_edit: Record, exit_record=None):
 
-    # працює разом з <<<def add_tag>>>
+        if isinstance(record_to_edit, Record):
+            new_tag = input(command_message("Enter the tag>>> "))
+            if new_tag != "":
+                if exit_record is not None:
+
+                    exiting_record_str = exit_record
+
+                    try:
+                        if self.book.add_teg(record_to_edit, exiting_record_str, new_tag):
+                            print(positive_action("Tag edded successful"))
+                        else:
+                            print(error_message("Tag not found"))
+                    except Exception as ve:
+                        print(error_message("No changes made to tag"))
+                else:
+
+                    try:
+                        exiting_record_str = self.book.find_exiting_record(
+                            record_to_edit.name.get_name)
+                        if self.book.add_teg(record_to_edit, exiting_record_str, new_tag):
+                            print(positive_action("Tag added successful"))
+                        else:
+                            print(error_message("Tag not found"))
+                    except Exception as ve:
+                        print(error_message("No changes made to the tag"))
+            else:
+                print(error_message("No changes made to the tag"))
+
+    # зміна тегу (працює разом з <<<def add_tag>>>)
     def do_add_tag_rec(self, *args):
-        "Adds a tag to a record in the address book by name"
+        "Edites phone to record in addressbook by name"
+
         question_name = input(command_message(
-            "Enter the name of the record to edit>>> "))
+            "Enter the name to edit phone>>> "))
         if question_name != "":
             record_to_edit = self.book.find_record(question_name)
             if isinstance(record_to_edit, Record):
@@ -832,7 +867,9 @@ class MyCmd(cmd.Cmd):
                 input_id = input(command_message(
                     "Enter ID>>> "))
                 if input_id != "":
-                    self.add_tag(self.book.find_record_id(int(input_id)))
+
+                    self.add_tag(self.book.find_record_id(
+                        int(input_id)), self.book.find_exititng_record_id(int(input_id)))
             else:
                 print(error_message(
                     f"No record found with the name: {question_name}"))
@@ -841,6 +878,7 @@ class MyCmd(cmd.Cmd):
 
     ############## видалення тегу ##########################
     # не консольна
+
     def rem_tag(self, record_to_edit: Record):
         if isinstance(record_to_edit, Record):
             in_data = input(command_message("Enter the tag>>> "))
