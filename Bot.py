@@ -10,12 +10,14 @@ from art import *
 from prompt_toolkit import prompt
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
+from FolderPath import create_base_json_files , CONTACTS,NOTES
 
 
 
 class MyCmd(cmd.Cmd):
-    book = AddressBook('Contacts.json')
-    notes_book = NotesBook('Notes.json')
+    create_base_json_files()
+    book = AddressBook(CONTACTS)
+    notes_book = NotesBook(NOTES)
     console = Console()
     # випадаючі команди
     word_completer = WordCompleter(
