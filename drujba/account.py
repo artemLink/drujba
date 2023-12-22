@@ -8,12 +8,12 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
 from random import choice
 from string import ascii_letters
-from FolderPath import FOLDER_ACCOUNTS_PATH, FOLDER_NOTESBOOKS_PATH, FOLDER_ADDRESSBOOKS_PATH, create_folders, create_base_json_files
+from drujba.FolderPath import FOLDER_ACCOUNTS_PATH, FOLDER_NOTESBOOKS_PATH, FOLDER_ADDRESSBOOKS_PATH, create_folders, create_base_json_files
 import os
-from Style import positive_action, command_message
-from Bot import MyCmd
-from Notes_book import NotesBook
-from Address_book import AddressBook
+from drujba.Style import positive_action, command_message
+from drujba.Bot import MyCmd
+from drujba.Notes_book import NotesBook
+from drujba.Address_book import AddressBook
 import imaplib
 
 import time
@@ -236,7 +236,7 @@ class LoginCMD(cmd.Cmd):
         return True
 
 
-if __name__ == '__main__':
+def start():
     console = Console()
     table = Table(show_header=True, header_style="bold cyan")
     table.add_column("Welcome To Help Assistant", style="bright_magenta", width=100, vertical='middle',
@@ -249,3 +249,8 @@ if __name__ == '__main__':
     console.print(table, width=100, style="bold magenta")
     logcmd = LoginCMD()
     logcmd.cmdloop()
+
+
+if __name__ == '__main__':
+    start()
+
