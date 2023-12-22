@@ -157,13 +157,12 @@ class AddressBook(UserList):
                             'Tags': [item.get_tag for item in record.tags],
                             }
         self.exiting_data.append(serialize_record)
-
-    def find_exititng_record_id(self, id):
-        # print(f'Type {type(id)} Value {id}')
+    def find_exititng_record_id(self,id):
+        #print(f'Type {type(id)} Value {id}')
         for item in self.exiting_data:
             if item['ID'] == id:
                 return item
-
+            
     @input_error
     def deserialize(self, dict) -> Record:
         record = Record(dict['Name'], dict['ID'])
@@ -278,7 +277,7 @@ class AddressBook(UserList):
         return f'{positive_action(f"Phone:")} {book_style(f"{phone}")} {positive_action("added.")}'
 
     def edit_phone(self, record: Record, serialize_record: {}, old_phone: str, new_phone: str) -> Record:
-
+        
         print()
         for item in record.phones:
             if item.get_phone == old_phone:
@@ -286,10 +285,11 @@ class AddressBook(UserList):
                 break
         for index, item in enumerate(serialize_record['Phones']):
             if item == old_phone:
-
+                
                 serialize_record['Phones'][index] = new_phone
-                self.save_contacts()
+                self.save_contacts()                
                 return True
+        
 
     @input_error
     def remove_phone(self, record: Record, serialize_record, phone):

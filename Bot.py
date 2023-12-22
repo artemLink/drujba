@@ -10,11 +10,13 @@ from art import *
 from prompt_toolkit import prompt
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
+from FolderPath import create_base_json_files , CONTACTS,NOTES
 
 
 class MyCmd(cmd.Cmd):
-    book = AddressBook('Contacts.json')
-    notes_book = NotesBook('Notes.json')
+    create_base_json_files()
+    book = AddressBook(CONTACTS)
+    notes_book = NotesBook(NOTES)
     console = Console()
     # випадаючі команди
     word_completer = WordCompleter(
@@ -384,9 +386,9 @@ class MyCmd(cmd.Cmd):
                 "Enter the new phone number>>> "))
             if edit_old_ph and edit_new_ph:
                 if exit_record is not None:
-
+                    
                     exiting_record_str = exit_record
-
+                    
                     try:
                         if self.book.edit_phone(record_to_edit, exiting_record_str, edit_old_ph, edit_new_ph):
                             print(positive_action("Phone edit successful"))
@@ -395,7 +397,7 @@ class MyCmd(cmd.Cmd):
                     except Exception as ve:
                         print(error_message("No changes made to the phone number."))
                 else:
-
+                    
                     try:
                         exiting_record_str = self.book.find_exiting_record(
                             record_to_edit.name.get_name)
@@ -410,11 +412,11 @@ class MyCmd(cmd.Cmd):
                 print(error_message("No changes made to the phone number."))
 
     # заміна номера телефона (працює разом з <<<def edit_phone>>>)
-    def do_edit_ph_rec(self, *args):
+    def do_edit_ph_rec(self,*args):
         "Edites phone to record in addressbook by name"
-
+        
         question_name = input(command_message(
-            "Enter the name to edit phone>>> "))
+            "Enter the name to edit phone>>> ")) 
         if question_name != "":
             record_to_edit = self.book.find_record(question_name)
             if isinstance(record_to_edit, Record):
@@ -450,9 +452,8 @@ class MyCmd(cmd.Cmd):
                 input_id = input(command_message(
                     "Enter ID>>> "))
                 if input_id != "":
-
-                    self.edit_phone(self.book.find_record_id(
-                        int(input_id)), self.book.find_exititng_record_id(int(input_id)))
+                    
+                    self.edit_phone(self.book.find_record_id(int(input_id)),self.book.find_exititng_record_id(int(input_id)))
             else:
                 print(error_message(
                     f"No record found with the name: {question_name}"))
