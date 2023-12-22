@@ -8,7 +8,7 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
 from random import choice
 from string import ascii_letters
-from FolderPath import FOLDER_ACCOUNTS_PATH, FOLDER_NOTESBOOKS_PATH, FOLDER_ADDRESSBOOKS_PATH, create_folders
+from FolderPath import FOLDER_ACCOUNTS_PATH, FOLDER_NOTESBOOKS_PATH, FOLDER_ADDRESSBOOKS_PATH, create_folders, create_base_json_files
 import os
 from Style import positive_action, command_message
 from Bot import MyCmd
@@ -242,7 +242,7 @@ if __name__ == '__main__':
     table.add_column("Welcome To Help Assistant", style="bright_magenta", width=100, vertical='middle',
                      justify='center')
     create_folders()
-
+    create_base_json_files()
     table.add_row("login    ---> Log in to the application")
     table.add_row("register ---> Register an account", )
 
